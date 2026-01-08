@@ -18,9 +18,9 @@ export interface Post {
   likes: number;
   comments: number;
   shares: number;
-  image_svg?: string;
+  image_svg?: string | null;
   category: string;
-  location: string;
+  location: string | null;
   engagement_rate: number;
   created_at: string;
   updated_at: string;

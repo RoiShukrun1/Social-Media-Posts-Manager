@@ -18,9 +18,9 @@ export interface Post {
   likes: number;
   comments: number;
   shares: number;
-  image_svg?: string;
+  image_svg?: string | null;
   category: string;
-  location: string;
+  location: string | null;
   engagement_rate: number;
   created_at: string;
   updated_at: string;
@@ -88,11 +88,22 @@ export interface CreatePostData {
   likes?: number;
   comments?: number;
   shares?: number;
-  image_svg?: string;
+  image_svg?: string | null;
   category: string;
-  location: string;
+  location: string | null;
   engagement_rate?: number;
   tags: string[];
 }
 
 export type UpdatePostData = Partial<CreatePostData>;
+
+export interface CreateAuthorData {
+  first_name: string;
+  last_name: string;
+  email: string;
+  company?: string;
+  job_title?: string;
+  bio?: string;
+  follower_count?: number;
+  verified?: boolean;
+}

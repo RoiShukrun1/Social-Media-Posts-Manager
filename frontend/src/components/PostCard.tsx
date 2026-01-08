@@ -1,4 +1,4 @@
-import { Post } from '../types';
+import { Post } from "../types";
 
 interface PostCardProps {
   post: Post;
@@ -12,20 +12,31 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return '1 day ago';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 14) return '1 week ago';
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-    
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    let relativeTime = "";
+    if (diffDays === 0) relativeTime = "Today";
+    else if (diffDays === 1) relativeTime = "1 day ago";
+    else if (diffDays < 7) relativeTime = `${diffDays} days ago`;
+    else if (diffDays < 14) relativeTime = "1 week ago";
+    else if (diffDays < 30)
+      relativeTime = `${Math.floor(diffDays / 7)} weeks ago`;
+    else if (diffDays < 60) relativeTime = "1 month ago";
+    else if (diffDays < 365)
+      relativeTime = `${Math.floor(diffDays / 30)} months ago`;
+    else
+      relativeTime = `${Math.floor(diffDays / 365)} year${
+        Math.floor(diffDays / 365) > 1 ? "s" : ""
+      } ago`;
+
+    const formattedDate = date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+    return `${relativeTime} • ${formattedDate}`;
   };
 
   const formatNumber = (num: number) => {
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1).replace(/\.0$/, '')}K`;
-    }
     return num.toLocaleString();
   };
 
@@ -34,7 +45,7 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
       {/* Image */}
       {post.image_svg ? (
         <div
-          className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold"
+          className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
           dangerouslySetInnerHTML={{ __html: post.image_svg }}
         />
       ) : (
@@ -46,14 +57,23 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
       {/* Content */}
       <div className="p-6">
         {/* Author */}
-        <div className="mb-4">
-          <h3 className="font-semibold text-gray-900">{post.author.first_name} {post.author.last_name}</h3>
-          <p className="text-sm text-gray-600">{post.author.job_title} at {post.author.company}</p>
+        <div className="mb-4 flex items-start gap-3">
+          {/* Author Image Space */}
+          <div className="w-10 h-10 flex-shrink-0"></div>
+          {/* Author Info */}
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900">
+              {post.author.first_name} {post.author.last_name}
+            </h3>
+            <p className="text-sm text-gray-600">
+              {post.author.job_title} at {post.author.company}
+            </p>
+          </div>
         </div>
 
         {/* Category Badge */}
         <div className="mb-3">
-          <span className="inline-block px-3 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">
+          <span className="inline-block px-3 py-1 text-xs font-semibold text-gray-700 bg-gray-100 rounded-full">
             {post.category}
           </span>
         </div>
@@ -64,11 +84,11 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
         </p>
 
         {/* Date */}
-        <p className="text-xs text-gray-500 mb-4">{formatDate(post.date)} • {post.date.split(' ')[0]}</p>
+        <p className="text-xs text-gray-500 mb-4">{formatDate(post.date)}</p>
 
         {/* Engagement Stats */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-          <div className="flex items-center gap-4 text-sm text-gray-600">
+          <div className="flex items-center gap-4 text-sm text-gray-600 font-semibold">
             <span className="flex items-center gap-1">
               <span>👍</span> {formatNumber(post.likes)}
             </span>
@@ -82,14 +102,14 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={() => onEdit(post)}
-              className="p-2 text-2xl hover:opacity-70 transition-opacity"
+              className="p-2 hover:opacity-70 transition-opacity"
               aria-label="Edit post"
             >
               ✏️
             </button>
             <button
               onClick={() => onDelete(post)}
-              className="p-2 text-2xl hover:opacity-70 transition-opacity"
+              className="p-2 hover:opacity-70 transition-opacity"
               aria-label="Delete post"
             >
               🗑️

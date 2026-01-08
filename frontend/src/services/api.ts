@@ -6,6 +6,7 @@ import type {
   CreatePostData,
   UpdatePostData,
   Author,
+  CreateAuthorData,
   Tag,
   Stats,
 } from '../types';
@@ -52,6 +53,16 @@ export const getAuthors = async (): Promise<Author[]> => {
 
 export const getAuthorById = async (id: number): Promise<Author> => {
   const response = await api.get(`/authors/${id}`);
+  return response.data.data;
+};
+
+export const createAuthor = async (data: CreateAuthorData): Promise<Author> => {
+  const response = await api.post('/authors', data);
+  return response.data.data;
+};
+
+export const updateAuthor = async (id: number, data: Partial<CreateAuthorData>): Promise<Author> => {
+  const response = await api.put(`/authors/${id}`, data);
   return response.data.data;
 };
 

@@ -1,16 +1,22 @@
-import { useState, useEffect } from 'react';
-import { QueryClient, QueryClientProvider, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getPosts, createPost, updatePost, deletePost } from './services/api';
-import { Post, PostFilters, CreatePostData, UpdatePostData } from './types';
+import { useState, useEffect } from "react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { getPosts, createPost, updatePost, deletePost } from "./services/api";
+import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
 
-import StatsHeader from './components/StatsHeader';
-import Filters from './components/Filters';
-import PostCard from './components/PostCard';
-import Pagination from './components/Pagination';
-import PostModal from './components/PostModal';
-import DeleteModal from './components/DeleteModal';
-import LoadingSkeleton from './components/LoadingSkeleton';
-import EmptyState from './components/EmptyState';
+import StatsHeader from "./components/StatsHeader";
+import Filters from "./components/Filters";
+import PostCard from "./components/PostCard";
+import Pagination from "./components/Pagination";
+import PostModal from "./components/PostModal";
+import DeleteModal from "./components/DeleteModal";
+import LoadingSkeleton from "./components/LoadingSkeleton";
+import EmptyState from "./components/EmptyState";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,10 +29,10 @@ const queryClient = new QueryClient({
 
 function PostsManager() {
   const queryClient = useQueryClient();
-  
+
   const [filters, setFilters] = useState<PostFilters>({
-    sortBy: 'date',
-    order: 'DESC',
+    sortBy: "date",
+    order: "DESC",
     page: 1,
     limit: 20,
   });
@@ -38,23 +44,50 @@ function PostsManager() {
   // Listen for add post button click from header
   useEffect(() => {
     const handleOpenModal = () => setIsCreateModalOpen(true);
-    window.addEventListener('openAddPostModal' as any, handleOpenModal);
-    return () => window.removeEventListener('openAddPostModal' as any, handleOpenModal);
+    window.addEventListener("openAddPostModal" as any, handleOpenModal);
+    return () =>
+      window.removeEventListener("openAddPostModal" as any, handleOpenModal);
   }, []);
 
   // Fetch posts
   const { data, isLoading, error } = useQuery({
-    queryKey: ['posts', filters],
+    queryKey: ["posts", filters],
     queryFn: () => getPosts(filters),
   });
 
   // Create mutation
   const createMutation = useMutation({
     mutationFn: createPost,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    onSuccess: async () => {
+      // Close modal first for better UX
       setIsCreateModalOpen(false);
+      // Then invalidate and refetch both posts and stats
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["posts"],
+          refetchType: "active",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["stats"],
+          refetchType: "active",
+        }),
+      ]);
+    },
+    onError: (error: any) => {
+      console.error("Create mutation failed:", error);
+      const errorMessage = error?.response?.data?.error || error.message;
+      const errorDetails = error?.response?.data?.details;
+      if (errorDetails) {
+        alert(
+          `Failed to create post: ${errorMessage}\n${JSON.stringify(
+            errorDetails,
+            null,
+            2
+          )}`
+        );
+      } else {
+        alert("Failed to create post: " + errorMessage);
+      }
     },
   });
 
@@ -62,20 +95,62 @@ function PostsManager() {
   const updateMutation = useMutation({
     mutationFn: ({ id, data }: { id: number; data: UpdatePostData }) =>
       updatePost(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    onSuccess: async () => {
+      // Close modal first for better UX
       setEditingPost(null);
+      // Then invalidate and refetch both posts and stats
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["posts"],
+          refetchType: "active",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["stats"],
+          refetchType: "active",
+        }),
+      ]);
+    },
+    onError: (error: any) => {
+      console.error("Update mutation failed:", error);
+      const errorMessage = error?.response?.data?.error || error.message;
+      const errorDetails = error?.response?.data?.details;
+      if (errorDetails) {
+        console.error("Validation details:", errorDetails);
+        alert(
+          `Failed to update post: ${errorMessage}\n${JSON.stringify(
+            errorDetails,
+            null,
+            2
+          )}`
+        );
+      } else {
+        alert("Failed to update post: " + errorMessage);
+      }
     },
   });
 
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: deletePost,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['posts'] });
-      queryClient.invalidateQueries({ queryKey: ['stats'] });
+    onSuccess: async () => {
+      // Close modal first for better UX
       setDeletingPost(null);
+      // Then invalidate and refetch both posts and stats
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["posts"],
+          refetchType: "active",
+        }),
+        queryClient.invalidateQueries({
+          queryKey: ["stats"],
+          refetchType: "active",
+        }),
+      ]);
+    },
+    onError: (error: any) => {
+      console.error("Delete mutation failed:", error);
+      const errorMessage = error?.response?.data?.error || error.message;
+      alert("Failed to delete post: " + errorMessage);
     },
   });
 
@@ -85,16 +160,19 @@ function PostsManager() {
 
   const handlePageChange = (page: number) => {
     setFilters({ ...filters, page });
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const handleCreatePost = (data: CreatePostData) => {
-    createMutation.mutate(data);
+  const handleCreatePost = (data: CreatePostData | UpdatePostData) => {
+    createMutation.mutate(data as CreatePostData);
   };
 
-  const handleUpdatePost = (data: UpdatePostData) => {
+  const handleUpdatePost = (data: CreatePostData | UpdatePostData) => {
     if (editingPost) {
-      updateMutation.mutate({ id: editingPost.id, data });
+      updateMutation.mutate({
+        id: editingPost.id,
+        data: data as UpdatePostData,
+      });
     }
   };
 
@@ -106,12 +184,9 @@ function PostsManager() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Stats Header */}
-      <StatsHeader />
-
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 pb-12">
-        {/* Add New Post Button - positioned in header */}
+        {/* Stats Header */}
+        <StatsHeader />
 
         {/* Filters */}
         <Filters filters={filters} onFiltersChange={handleFilterChange} />
@@ -121,7 +196,7 @@ function PostsManager() {
           <div className="bg-red-50 border border-red-200 rounded-card p-4 mb-6">
             <p className="text-red-800 font-medium">Error loading posts</p>
             <p className="text-red-600 text-sm mt-1">
-              {error instanceof Error ? error.message : 'An error occurred'}
+              {error instanceof Error ? error.message : "An error occurred"}
             </p>
           </div>
         )}
