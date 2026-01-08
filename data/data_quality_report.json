@@ -1,0 +1,116 @@
+{
+  "header_issues": [
+    {
+      "column": "author_bio ",
+      "fixed": "author_bio"
+    },
+    {
+      "column": "post_text ",
+      "fixed": "post_text"
+    }
+  ],
+  "date_format_issues": [
+    {
+      "column": "post_date",
+      "issues_fixed": 0,
+      "format_breakdown": {
+        "standard": 18222,
+        "unix_timestamp": 2223,
+        "european": 4555,
+        "other": 0
+      },
+      "note": "Two-pass parsing: text dates first, then Unix timestamps"
+    }
+  ],
+  "numeric_quote_issues": [
+    {
+      "column": "likes",
+      "count": 2522
+    },
+    {
+      "column": "comments",
+      "count": 2404
+    },
+    {
+      "column": "total_engagements",
+      "count": 2483
+    }
+  ],
+  "boolean_inconsistencies": [
+    {
+      "column": "author_verified",
+      "original_values": [
+        "false",
+        "False",
+        "true",
+        "0",
+        "True",
+        "1"
+      ]
+    }
+  ],
+  "na_values": [
+    {
+      "column": "total_engagements",
+      "count": 1226
+    }
+  ],
+  "text_corruption": [
+    {
+      "pattern": "extra_commas",
+      "count": 1228
+    }
+  ],
+  "email_corruption": [
+    {
+      "double_at": 606,
+      "double_dots": 663,
+      "total": 1269
+    }
+  ],
+  "special_char_sanitization": [
+    {
+      "fields_sanitized": "1253",
+      "patterns_removed": [
+        "';--",
+        "'OR'1'='1",
+        "\\n",
+        "\\t",
+        "\\r",
+        "\\x00"
+      ],
+      "note": "Removed SQL injection patterns and control characters for security"
+    }
+  ],
+  "missing_svg_images": [
+    {
+      "count": 10015,
+      "percentage": 40.1,
+      "note": "Standardized to empty string (NULL in database)"
+    }
+  ],
+  "duplicate_tags": [
+    {
+      "rows_affected": 9983,
+      "total_duplicates_removed": 11469,
+      "note": "Deduplicated tags while preserving order"
+    }
+  ],
+  "json_formatting": [
+    {
+      "rows_reformatted": 25000,
+      "format": "[\"#tech\", \"#AI\"]",
+      "note": "Standardized to space after comma for consistency"
+    }
+  ],
+  "calculation_errors": [
+    {
+      "column": "total_engagements",
+      "mismatches": 3740,
+      "na_values": 1226
+    }
+  ],
+  "validation_errors": [],
+  "total_rows_processed": 25000,
+  "total_issue_categories_fixed": 12
+}
