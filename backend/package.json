@@ -1,0 +1,31 @@
+{
+  "name": "social-media-posts-backend",
+  "version": "1.0.0",
+  "description": "Backend API for Social Media Posts Management System",
+  "main": "dist/server.js",
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "db:migrate": "tsx src/db/migrate.ts"
+  },
+  "keywords": ["social-media", "api", "typescript"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "better-sqlite3": "^11.9.0",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.5.3",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/cors": "^2.8.17",
+    "@types/better-sqlite3": "^7.6.8",
+    "@types/node": "^20.10.6",
+    "typescript": "^5.3.3",
+    "tsx": "^4.7.0"
+  }
+}
+
