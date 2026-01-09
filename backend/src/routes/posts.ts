@@ -1,34 +1,60 @@
+/**
+ * posts.ts
+ *
+ * Post routes and request handlers.
+ * Handles all HTTP endpoints for post operations including listing, creation, updates, and deletion.
+ * Includes Zod validation, filtering, sorting, and pagination support.
+ */
+
 import { Router, Request, Response } from "express";
 import { PostModel } from "../models/postModel";
 import { z } from "zod";
+import {
+  getErrorMessage,
+  hasErrorName,
+  hasErrorDetails,
+} from "../utils/errorHandler";
+import { HTTP_STATUS, DEFAULTS } from "../constants";
 
 const router = Router();
 
 // GET /api/posts - List posts with filtering, sorting, and pagination
 router.get("/", (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const page = parseInt(req.query.page as string) || DEFAULTS.defaultPage;
+    const limit = parseInt(req.query.limit as string) || DEFAULTS.pageSize;
     const sortField = (req.query.sortBy as string) || "date";
     const sortOrder =
       (req.query.order as string)?.toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-    const filters: any = {};
+    const filters: {
+      category?: string;
+      search?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {};
 
-    if (req.query.category) filters.category = req.query.category;
-    if (req.query.search) filters.search = req.query.search;
-    if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
-    if (req.query.dateTo) filters.dateTo = req.query.dateTo;
+    if (req.query.category) filters.category = req.query.category as string;
+    if (req.query.search) filters.search = req.query.search as string;
+    if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom as string;
+    if (req.query.dateTo) filters.dateTo = req.query.dateTo as string;
 
-    const sort: any = {
-      field: [
-        "date",
-        "likes",
-        "comments",
-        "shares",
-        "engagement_rate",
-      ].includes(sortField)
-        ? sortField
+    const validSortFields = [
+      "date",
+      "likes",
+      "comments",
+      "shares",
+      "engagement_rate",
+    ] as const;
+
+    const sort: {
+      field: (typeof validSortFields)[number];
+      order: "ASC" | "DESC";
+    } = {
+      field: validSortFields.includes(
+        sortField as (typeof validSortFields)[number]
+      )
+        ? (sortField as (typeof validSortFields)[number])
         : "date",
       order: sortOrder,
     };
@@ -45,10 +71,10 @@ router.get("/", (req: Request, res: Response) => {
         totalPages: Math.ceil(result.total / limit),
       },
     });
-  } catch (error: any) {
-    res.status(500).json({
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -98,22 +124,22 @@ router.post("/", (req: Request, res: Response) => {
     const postId = PostModel.createPost(cleanedPostData, tags);
     const newPost = PostModel.getPostById(postId);
 
-    res.status(201).json({
+    res.status(HTTP_STATUS.CREATED).json({
       success: true,
       data: newPost,
     });
-  } catch (error: any) {
-    if (error.name === "ZodError") {
-      return res.status(400).json({
+  } catch (error) {
+    if (hasErrorName(error) && error.name === "ZodError") {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "Validation error",
-        details: error.errors,
+        details: hasErrorDetails(error) ? error.errors : undefined,
       });
     }
 
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -126,7 +152,7 @@ router.put("/:id", (req: Request, res: Response) => {
     // Check if post exists
     const existingPost = PostModel.getPostById(id);
     if (!existingPost) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: "Post not found",
       });
@@ -136,7 +162,11 @@ router.put("/:id", (req: Request, res: Response) => {
     const { tags, ...postData } = validatedData;
 
     // Convert undefined to null for optional fields
-    const cleanedPostData: any = { ...postData };
+    const cleanedPostData: Partial<typeof postData> & {
+      image_svg?: string | null;
+      location?: string | null;
+    } = { ...postData };
+
     if (
       "image_svg" in cleanedPostData &&
       cleanedPostData.image_svg === undefined
@@ -153,7 +183,7 @@ router.put("/:id", (req: Request, res: Response) => {
     const updated = PostModel.updatePost(id, cleanedPostData, tags);
 
     if (!updated && tags === undefined) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "No valid fields to update",
       });
@@ -166,18 +196,18 @@ router.put("/:id", (req: Request, res: Response) => {
       data: updatedPost,
       message: "Post updated successfully",
     });
-  } catch (error: any) {
-    if (error.name === "ZodError") {
-      return res.status(400).json({
+  } catch (error) {
+    if (hasErrorName(error) && error.name === "ZodError") {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "Validation error",
-        details: error.errors,
+        details: hasErrorDetails(error) ? error.errors : undefined,
       });
     }
 
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -189,7 +219,7 @@ router.delete("/:id", (req: Request, res: Response) => {
     const deleted = PostModel.deletePost(id);
 
     if (!deleted) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: "Post not found",
       });
@@ -199,10 +229,10 @@ router.delete("/:id", (req: Request, res: Response) => {
       success: true,
       message: "Post deleted successfully",
     });
-  } catch (error: any) {
-    res.status(500).json({
+  } catch (error) {
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });

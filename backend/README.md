@@ -25,16 +25,22 @@ Backend API for the Social Media Posts Management System, built with Node.js, Ty
 npm install
 ```
 
-2. Run database migration and import data:
+2. Start the development server:
 
 ```bash
-npm run db:migrate
+npm run dev
 ```
 
-This will:
-- Create the database schema (authors, posts, tags, post_tags tables)
-- Import data from `../data/social_media_posts_data_clean.csv`
+The server will **automatically** on first startup:
+
+- Create the database schema
+- Import all 25,000 posts from `../data/social_media_posts_data_clean.csv` (if database is empty)
 - Set up indexes for optimal query performance
+- Start on `http://localhost:3000`
+
+**First-time startup takes ~10-15 seconds** to import 25,000 posts.
+
+> **Manual Database Reset**: Run `npm run db:migrate` if you need to reset/rebuild the database
 
 ## Usage
 
@@ -58,6 +64,7 @@ The server will start on `http://localhost:3000`
 ### Posts
 
 - `GET /api/posts` - List posts with filtering, sorting, and pagination
+
   - Query params:
     - `page` (default: 1)
     - `limit` (default: 20)
@@ -69,9 +76,11 @@ The server will start on `http://localhost:3000`
     - `dateTo` (YYYY-MM-DD format, filter by date range end)
 
 - `POST /api/posts` - Create new post
+
   - Body: `{ author_id, text, date, likes?, comments?, shares?, image_svg?, category, location?, engagement_rate?, tags? }`
 
 - `PUT /api/posts/:id` - Update post
+
   - Body: `{ text?, category?, date?, likes?, comments?, shares?, image_svg?, location?, engagement_rate?, tags? }`
   - All fields optional - only updates provided fields
 
@@ -80,6 +89,7 @@ The server will start on `http://localhost:3000`
 ### Authors
 
 - `POST /api/authors` - Create new author
+
   - Body: `{ first_name, last_name, email, company?, job_title?, bio?, follower_count?, verified? }`
 
 - `PUT /api/authors/:id` - Update author
@@ -137,31 +147,42 @@ The server will start on `http://localhost:3000`
 ```
 backend/
 ├── src/
+│   ├── config.ts              # Environment configuration
+│   ├── constants.ts           # Application constants
+│   ├── types.ts               # TypeScript interfaces
+│   ├── server.ts              # Express app
 │   ├── db/
-│   │   ├── database.ts       # Database connection
+│   │   ├── database.ts        # Database connection
 │   │   ├── schema.ts          # Table creation
-│   │   └── migrate.ts         # Migration runner
+│   │   ├── migrate.ts         # Migration runner
+│   │   └── import.ts          # CSV import logic
 │   ├── models/
-│   │   ├── postModel.ts       # Post queries
+│   │   ├── postModel.ts       # Post queries (with N+1 optimization)
 │   │   ├── authorModel.ts     # Author queries
 │   │   ├── tagModel.ts        # Tag queries
 │   │   └── statsModel.ts      # Statistics queries
 │   ├── routes/
-│   │   ├── posts.ts           # Post endpoints
-│   │   ├── authors.ts         # Author endpoints
+│   │   ├── posts.ts           # Post endpoints (Zod validation)
+│   │   ├── authors.ts         # Author endpoints (Zod validation)
 │   │   ├── tags.ts            # Tag endpoints
 │   │   └── stats.ts           # Stats endpoints
-│   ├── services/
-│   │   └── importService.ts   # CSV import logic
-│   ├── types/
-│   │   └── index.ts           # TypeScript interfaces
-│   └── server.ts              # Express app
+│   └── utils/
+│       └── errorHandler.ts    # Error handling utilities
 ├── data/
 │   └── posts.db               # SQLite database (auto-generated)
 ├── package.json
 ├── tsconfig.json
 └── README.md
 ```
+
+## Key Features
+
+- **Auto-initialization**: Database schema created automatically on server startup
+- **Graceful Shutdown**: Properly closes database connections on SIGINT/SIGTERM signals
+- **SQL Injection Protection**: Safe parameterized queries with whitelisted sort fields
+- **Zod Validation**: Type-safe request validation for all endpoints
+- **N+1 Query Optimization**: Batch tag fetching for optimal performance
+- **Type Safety**: Full TypeScript implementation with strict types
 
 ## Technologies Used
 
@@ -172,4 +193,3 @@ backend/
 - **Zod** - Schema validation
 - **csv-parse** - CSV parsing
 - **cors** - CORS middleware
-

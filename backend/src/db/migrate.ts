@@ -1,5 +1,13 @@
+/**
+ * migrate.ts
+ *
+ * Database migration script.
+ * Drops existing tables, recreates schema, and imports data from CSV.
+ * Run with: npm run db:migrate
+ */
+
 import { createTables, dropTables } from "./schema";
-import { importDataFromCSV } from "../services/importService";
+import { importDataFromCSV } from "./import";
 
 async function migrate() {
   console.log(

@@ -1,3 +1,11 @@
+/**
+ * statsModel.ts
+ *
+ * Statistics data access layer.
+ * Provides aggregated statistics for the dashboard including total posts, likes, comments, and engagement rates.
+ * Uses optimized queries to calculate metrics across all posts.
+ */
+
 import db from '../db/database';
 
 export interface Stats {

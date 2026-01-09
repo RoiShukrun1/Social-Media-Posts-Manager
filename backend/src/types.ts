@@ -1,3 +1,11 @@
+/**
+ * types.ts
+ *
+ * TypeScript type definitions and interfaces.
+ * Defines all data models, API request/response types, and CSV row structure.
+ * Provides type safety across the entire backend application.
+ */
+
 export interface Author {
   id: number;
   first_name: string;

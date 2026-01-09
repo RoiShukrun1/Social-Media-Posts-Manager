@@ -1,23 +1,32 @@
-import { useState, useEffect } from "react";
+/**
+ * App.tsx
+ *
+ * Main application component and entry point.
+ * Orchestrates the post management system using custom hooks for separation of concerns.
+ */
+
 import {
   QueryClient,
   QueryClientProvider,
   useQuery,
-  useMutation,
-  useQueryClient,
 } from "@tanstack/react-query";
-import { getPosts, createPost, updatePost, deletePost } from "./services/api";
-import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
+import { getPosts } from "./api";
+import { CreatePostData, UpdatePostData } from "./types";
 
-import StatsHeader from "./components/StatsHeader";
+import StatsHeader from "./components/ui/StatsHeader";
 import Filters from "./components/Filters";
-import PostCard from "./components/PostCard";
-import Pagination from "./components/Pagination";
-import PostModal from "./components/PostModal";
-import DeleteModal from "./components/DeleteModal";
-import PostViewModal from "./components/PostViewModal";
-import LoadingSkeleton from "./components/LoadingSkeleton";
-import EmptyState from "./components/EmptyState";
+import PostCard from "./components/ui/PostCard";
+import Pagination from "./components/ui/Pagination";
+import PostModal from "./components/modals/PostModal";
+import DeleteModal from "./components/modals/DeleteModal";
+import PostViewModal from "./components/modals/PostViewModal";
+import LoadingSkeleton from "./components/ui/LoadingSkeleton";
+import EmptyState from "./components/ui/EmptyState";
+import ToastProvider from "./components/ui/ToastProvider";
+
+import { usePostManagement } from "./hooks/usePostManagement";
+import { useFilters } from "./hooks/useFilters";
+import { useModals } from "./hooks/useModals";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,26 +38,30 @@ const queryClient = new QueryClient({
 });
 
 function PostsManager() {
-  const queryClient = useQueryClient();
-
-  const [filters, setFilters] = useState<PostFilters>({
-    order: "DESC",
-    page: 1,
-    limit: 20,
-  });
-
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
-  const [deletingPost, setDeletingPost] = useState<Post | null>(null);
-  const [viewingPost, setViewingPost] = useState<Post | null>(null);
-
-  // Listen for add post button click from header
-  useEffect(() => {
-    const handleOpenModal = () => setIsCreateModalOpen(true);
-    window.addEventListener("openAddPostModal" as any, handleOpenModal);
-    return () =>
-      window.removeEventListener("openAddPostModal" as any, handleOpenModal);
-  }, []);
+  // Custom hooks for separation of concerns
+  const { filters, handleFilterChange, handlePageChange } = useFilters();
+  const {
+    isCreateModalOpen,
+    openCreateModal,
+    closeCreateModal,
+    editingPost,
+    openEditModal,
+    closeEditModal,
+    deletingPost,
+    openDeleteModal,
+    closeDeleteModal,
+    viewingPost,
+    openViewModal,
+    closeViewModal,
+  } = useModals();
+  const {
+    createPost,
+    updatePost,
+    deletePost,
+    isCreating,
+    isUpdating,
+    isDeleting,
+  } = usePostManagement();
 
   // Fetch posts
   const { data, isLoading, error } = useQuery({
@@ -56,135 +69,36 @@ function PostsManager() {
     queryFn: () => getPosts(filters),
   });
 
-  // Create mutation
-  const createMutation = useMutation({
-    mutationFn: createPost,
-    onSuccess: async () => {
-      // Close modal first for better UX
-      setIsCreateModalOpen(false);
-      // Then invalidate and refetch both posts and stats
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["posts"] }),
-        queryClient.invalidateQueries({ queryKey: ["stats"] }),
-      ]);
-      // Force immediate refetch
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["posts"] }),
-        queryClient.refetchQueries({ queryKey: ["stats"] }),
-      ]);
-    },
-    onError: (error: any) => {
-      console.error("Create mutation failed:", error);
-      const errorMessage = error?.response?.data?.error || error.message;
-      const errorDetails = error?.response?.data?.details;
-      if (errorDetails) {
-        alert(
-          `Failed to create post: ${errorMessage}\n${JSON.stringify(
-            errorDetails,
-            null,
-            2
-          )}`
-        );
-      } else {
-        alert("Failed to create post: " + errorMessage);
-      }
-    },
-  });
-
-  // Update mutation
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: number; data: UpdatePostData }) =>
-      updatePost(id, data),
-    onSuccess: async () => {
-      // Close modal first for better UX
-      setEditingPost(null);
-      // Then invalidate and refetch both posts and stats
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["posts"] }),
-        queryClient.invalidateQueries({ queryKey: ["stats"] }),
-      ]);
-      // Force immediate refetch
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["posts"] }),
-        queryClient.refetchQueries({ queryKey: ["stats"] }),
-      ]);
-    },
-    onError: (error: any) => {
-      console.error("Update mutation failed:", error);
-      const errorMessage = error?.response?.data?.error || error.message;
-      const errorDetails = error?.response?.data?.details;
-      if (errorDetails) {
-        console.error("Validation details:", errorDetails);
-        alert(
-          `Failed to update post: ${errorMessage}\n${JSON.stringify(
-            errorDetails,
-            null,
-            2
-          )}`
-        );
-      } else {
-        alert("Failed to update post: " + errorMessage);
-      }
-    },
-  });
-
-  // Delete mutation
-  const deleteMutation = useMutation({
-    mutationFn: deletePost,
-    onSuccess: async () => {
-      // Close modal first for better UX
-      setDeletingPost(null);
-      // Then invalidate and refetch both posts and stats
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["posts"] }),
-        queryClient.invalidateQueries({ queryKey: ["stats"] }),
-      ]);
-      // Force immediate refetch
-      await Promise.all([
-        queryClient.refetchQueries({ queryKey: ["posts"] }),
-        queryClient.refetchQueries({ queryKey: ["stats"] }),
-      ]);
-    },
-    onError: (error: any) => {
-      console.error("Delete mutation failed:", error);
-      const errorMessage = error?.response?.data?.error || error.message;
-      alert("Failed to delete post: " + errorMessage);
-    },
-  });
-
-  const handleFilterChange = (newFilters: PostFilters) => {
-    setFilters({ ...newFilters, page: 1 });
-  };
-
-  const handlePageChange = (page: number) => {
-    setFilters({ ...filters, page });
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
+  // Handler functions
   const handleCreatePost = (data: CreatePostData | UpdatePostData) => {
-    createMutation.mutate(data as CreatePostData);
+    createPost(data as CreatePostData);
+    closeCreateModal();
   };
 
   const handleUpdatePost = (data: CreatePostData | UpdatePostData) => {
     if (editingPost) {
-      updateMutation.mutate({
-        id: editingPost.id,
-        data: data as UpdatePostData,
-      });
+      updatePost(editingPost.id, data as UpdatePostData);
+      closeEditModal();
     }
   };
 
   const handleDeletePost = () => {
     if (deletingPost) {
-      deleteMutation.mutate(deletingPost.id);
+      deletePost(deletingPost.id);
+      closeDeleteModal();
     }
+  };
+
+  const handleCloseEditModal = () => {
+    closeCreateModal();
+    closeEditModal();
   };
 
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-6 pb-12">
         {/* Stats Header */}
-        <StatsHeader />
+        <StatsHeader onAddPostClick={openCreateModal} />
 
         {/* Filters */}
         <Filters filters={filters} onFiltersChange={handleFilterChange} />
@@ -213,9 +127,9 @@ function PostsManager() {
                 <PostCard
                   key={post.id}
                   post={post}
-                  onEdit={setEditingPost}
-                  onDelete={setDeletingPost}
-                  onView={setViewingPost}
+                  onEdit={openEditModal}
+                  onDelete={openDeleteModal}
+                  onView={openViewModal}
                 />
               ))}
             </div>
@@ -234,30 +148,24 @@ function PostsManager() {
       {/* Create/Edit Modal */}
       <PostModal
         isOpen={isCreateModalOpen || !!editingPost}
-        onClose={() => {
-          setIsCreateModalOpen(false);
-          setEditingPost(null);
-        }}
+        onClose={handleCloseEditModal}
         onSubmit={editingPost ? handleUpdatePost : handleCreatePost}
         post={editingPost}
-        isLoading={createMutation.isPending || updateMutation.isPending}
+        isLoading={isCreating || isUpdating}
       />
 
       {/* Delete Confirmation Modal */}
       <DeleteModal
         isOpen={!!deletingPost}
-        onClose={() => setDeletingPost(null)}
+        onClose={closeDeleteModal}
         onConfirm={handleDeletePost}
         post={deletingPost}
-        isLoading={deleteMutation.isPending}
+        isLoading={isDeleting}
       />
 
       {/* View Post Modal */}
       {viewingPost && (
-        <PostViewModal
-          post={viewingPost}
-          onClose={() => setViewingPost(null)}
-        />
+        <PostViewModal post={viewingPost} onClose={closeViewModal} />
       )}
     </div>
   );
@@ -266,6 +174,7 @@ function PostsManager() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ToastProvider />
       <PostsManager />
     </QueryClientProvider>
   );

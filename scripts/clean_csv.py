@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-CSV Data Cleaning Script for Social Media Posts
+Data Cleaning Script for Social Media Posts Data CSV file
 Cleans corrupted CSV data and outputs a clean version with a quality report.
 """
 

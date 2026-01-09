@@ -1,5 +1,12 @@
-import { useEffect } from "react";
-import { Post } from "../types";
+/**
+ * DeleteModal
+ *
+ * Confirmation modal for deleting posts.
+ * Displays post information and confirms user intent before deletion.
+ */
+
+import { Post } from "../../types";
+import { useEscapeKey } from "../../hooks/useEscapeKey";
 
 interface DeleteModalProps {
   isOpen: boolean;
@@ -16,17 +23,8 @@ export default function DeleteModal({
   post,
   isLoading,
 }: DeleteModalProps) {
-  // Handle Escape key to close modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen && !isLoading) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose, isLoading]);
+  // Handle Escape key to close modal (only when not loading)
+  useEscapeKey(onClose, isOpen && !isLoading);
 
   if (!isOpen || !post) return null;
 

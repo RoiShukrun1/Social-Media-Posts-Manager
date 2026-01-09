@@ -1,6 +1,6 @@
 # 📊 Social Media Posts Management System
 
-A full-stack application for managing social media posts with data cleaning, RESTful API, and beautiful React UI.
+A full-stack application for managing social media posts with data cleaning, RESTful API and React UI.
 
 ![Tech Stack](https://img.shields.io/badge/React-19-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)
@@ -13,9 +13,11 @@ A full-stack application for managing social media posts with data cleaning, RES
 - **🔍 Advanced Search**: Search by text, author, category, tags, date range
 - **📊 Real-time Stats**: Dashboard with engagement metrics
 - **✨ Full CRUD**: Create, Read, Update, Delete operations
+- **🖼️ Image Upload**: Drag-and-drop image uploader with preview (max 5MB)
 - **🎨 Beautiful UI**: Modern design with Tailwind CSS
 - **⚡ Fast & Responsive**: Optimized performance with React Query
 - **🎯 Type-Safe**: Full TypeScript implementation
+- **🏗️ Clean Architecture**: Custom hooks for separation of concerns
 
 ## 📸 Screenshots
 
@@ -129,16 +131,33 @@ This will:
 ```bash
 cd backend
 npm install
-npm run db:migrate  # Creates database and imports data
 npm run dev         # Starts server on http://localhost:3000
 ```
 
-The backend will:
+The backend will **automatically** on first startup:
 
-- Create SQLite database
-- Import all 25,000 posts
-- Start Express server
+- Create SQLite database schema
+- Import all 25,000 posts from the cleaned CSV
+- Start Express server on http://localhost:3000
 - Enable CORS for frontend
+
+> **Note**: Database initialization happens only once. If you need to reset the database, run `npm run db:migrate`
+
+**First-time startup:** Expect a ~15 second delay while importing 25,000 posts. You'll see:
+
+```
+Initializing database...
+✓ Database schema created
+Database is empty. Importing data from CSV...
+  ✓ Loaded 25000 rows from CSV
+  ✓ Created 3991 authors
+  ✓ Created 25000 posts
+  ✓ Created 11 tags
+  ✓ Created [X] post-tag relationships
+✓ Data import completed
+✓ Database initialized
+Server running on http://localhost:3000
+```
 
 ### 4. Frontend Setup
 
@@ -164,25 +183,39 @@ social-media-posts-manager/
 │   └── data_quality_report.json           # Quality report
 ├── backend/
 │   ├── src/
+│   │   ├── config.ts            # Environment configuration
+│   │   ├── constants.ts         # Application constants
+│   │   ├── types.ts             # TypeScript types
+│   │   ├── server.ts            # Express server
 │   │   ├── db/
 │   │   │   ├── database.ts      # SQLite connection
 │   │   │   ├── schema.ts        # Database schema
-│   │   │   └── migrate.ts       # Migration script
-│   │   ├── models/              # Data models
-│   │   ├── routes/              # API routes
-│   │   ├── services/            # Business logic
-│   │   ├── types/               # TypeScript types
-│   │   └── server.ts            # Express server
+│   │   │   ├── migrate.ts       # Migration script
+│   │   │   └── import.ts        # CSV import logic
+│   │   ├── models/              # Data models (4 files)
+│   │   ├── routes/              # API routes (4 files)
+│   │   └── utils/               # Utility functions
 │   ├── data/
 │   │   └── posts.db             # SQLite database
 │   └── package.json
 ├── frontend/
 │   ├── src/
-│   │   ├── components/          # React components
-│   │   ├── services/            # API client
-│   │   ├── types/               # TypeScript types
+│   │   ├── api.ts               # API client
 │   │   ├── App.tsx              # Main app
-│   │   └── main.tsx             # Entry point
+│   │   ├── main.tsx             # Entry point
+│   │   ├── components/          # React components
+│   │   │   ├── forms/          # Form components (5 files)
+│   │   │   ├── modals/         # Modal components (3 files)
+│   │   │   └── ui/             # UI components (6 files)
+│   │   ├── constants/           # App constants (2 files)
+│   │   ├── hooks/               # Custom hooks (5 files)
+│   │   │   ├── usePostManagement.ts # CRUD operations
+│   │   │   ├── useFilters.ts        # Filter state management
+│   │   │   ├── useModals.ts         # Modal state management
+│   │   │   ├── useBodyScrollLock.ts # Scroll locking
+│   │   │   └── useEscapeKey.ts      # ESC key handler
+│   │   ├── types/               # TypeScript types (3 files)
+│   │   └── utils/               # Utility functions
 │   ├── tailwind.config.js       # Tailwind config
 │   └── package.json
 └── README.md
@@ -311,6 +344,7 @@ curl "http://localhost:3000/api/posts?limit=5"
 - [x] Sorting and pagination
 - [x] Validation with Zod
 - [x] Error handling
+- [x] Graceful database shutdown (SIGINT/SIGTERM)
 
 ### Phase 3: Frontend ✅
 
@@ -319,6 +353,8 @@ curl "http://localhost:3000/api/posts?limit=5"
 - [x] Post listing with filters
 - [x] Search functionality
 - [x] Create/Edit/Delete modals
+- [x] Image uploader with drag-and-drop
+- [x] Custom hooks architecture (usePostManagement, useFilters, useModals)
 - [x] Pagination
 - [x] Loading states
 - [x] Empty states

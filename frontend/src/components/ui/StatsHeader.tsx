@@ -1,11 +1,33 @@
-import { useQuery } from "@tanstack/react-query";
-import { getStats } from "../services/api";
+/**
+ * StatsHeader
+ *
+ * Header component displaying page title, statistics, and "Add Post" button.
+ * Fetches and displays aggregate statistics: total posts, likes, comments, and average engagement.
+ */
 
-export default function StatsHeader() {
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { getStats } from "../../api";
+import { formatNumberCompact } from "../../utils/formatters";
+import { COLORS } from "../../constants/config";
+
+interface StatsHeaderProps {
+  onAddPostClick: () => void;
+}
+
+export default function StatsHeader({ onAddPostClick }: StatsHeaderProps) {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: getStats,
   });
+
+  // Memoize formatted statistics to avoid recalculating on every render
+  const formattedStats = useMemo(() => ({
+    totalPosts: stats?.totalPosts ? stats.totalPosts.toLocaleString() : "0",
+    totalLikes: stats?.totalLikes ? formatNumberCompact(stats.totalLikes) : "0",
+    totalComments: stats?.totalComments ? formatNumberCompact(stats.totalComments) : "0",
+    avgEngagement: stats?.avgEngagementRate ? `${stats.avgEngagementRate.toFixed(1)}%` : "0%",
+  }), [stats]);
 
   if (isLoading) {
     return (
@@ -30,15 +52,6 @@ export default function StatsHeader() {
     );
   }
 
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`;
-    } else if (num >= 1000) {
-      return `${Math.floor(num / 1000)}K`;
-    }
-    return num.toLocaleString();
-  };
-
   return (
     <div className="pt-8">
       {/* Header in white container */}
@@ -52,11 +65,16 @@ export default function StatsHeader() {
           </p>
         </div>
         <button
-          onClick={() =>
-            window.dispatchEvent(new CustomEvent("openAddPostModal"))
-          }
+          onClick={onAddPostClick}
           aria-label="Add new post"
-          className="px-6 py-3 bg-[#48BB78] text-white rounded-lg font-semibold hover:bg-[#38A169] transition-colors shadow-sm flex items-center gap-2"
+          style={{ backgroundColor: COLORS.success }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.successHover)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.success)
+          }
+          className="px-6 py-3 text-white rounded-lg font-semibold transition-colors shadow-sm flex items-center gap-2"
         >
           <span className="text-lg" aria-hidden="true">
             ➕
@@ -71,26 +89,10 @@ export default function StatsHeader() {
         role="region"
         aria-label="Post statistics"
       >
-        <StatCard
-          title="Total Posts"
-          value={stats?.totalPosts ? stats.totalPosts.toLocaleString() : "0"}
-        />
-        <StatCard
-          title="Total Likes"
-          value={stats?.totalLikes ? formatNumber(stats.totalLikes) : "0"}
-        />
-        <StatCard
-          title="Total Comments"
-          value={stats?.totalComments ? formatNumber(stats.totalComments) : "0"}
-        />
-        <StatCard
-          title="Avg Engagement"
-          value={
-            stats?.avgEngagementRate
-              ? `${stats.avgEngagementRate.toFixed(1)}%`
-              : "0%"
-          }
-        />
+        <StatCard title="Total Posts" value={formattedStats.totalPosts} />
+        <StatCard title="Total Likes" value={formattedStats.totalLikes} />
+        <StatCard title="Total Comments" value={formattedStats.totalComments} />
+        <StatCard title="Avg Engagement" value={formattedStats.avgEngagement} />
       </div>
     </div>
   );

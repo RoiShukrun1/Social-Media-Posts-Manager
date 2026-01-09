@@ -1,4 +1,13 @@
-import { Post } from "../types";
+/**
+ * PostCard
+ *
+ * Card component for displaying individual post in the grid view.
+ * Shows post preview with author info, engagement stats, and action buttons.
+ */
+
+import { useMemo } from "react";
+import { Post } from "../../types";
+import { formatDate, formatNumber } from "../../utils/formatters";
 
 interface PostCardProps {
   post: Post;
@@ -13,38 +22,11 @@ export default function PostCard({
   onDelete,
   onView,
 }: PostCardProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    let relativeTime = "";
-    if (diffDays === 0) relativeTime = "Today";
-    else if (diffDays === 1) relativeTime = "1 day ago";
-    else if (diffDays < 7) relativeTime = `${diffDays} days ago`;
-    else if (diffDays < 14) relativeTime = "1 week ago";
-    else if (diffDays < 30)
-      relativeTime = `${Math.floor(diffDays / 7)} weeks ago`;
-    else if (diffDays < 60) relativeTime = "1 month ago";
-    else if (diffDays < 365)
-      relativeTime = `${Math.floor(diffDays / 30)} months ago`;
-    else
-      relativeTime = `${Math.floor(diffDays / 365)} year${
-        Math.floor(diffDays / 365) > 1 ? "s" : ""
-      } ago`;
-
-    const formattedDate = date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    return `${relativeTime} • ${formattedDate}`;
-  };
-
-  const formatNumber = (num: number) => {
-    return num.toLocaleString();
-  };
+  // Memoize expensive formatting operations
+  const formattedDate = useMemo(() => formatDate(post.date), [post.date]);
+  const formattedLikes = useMemo(() => formatNumber(post.likes), [post.likes]);
+  const formattedComments = useMemo(() => formatNumber(post.comments), [post.comments]);
+  const formattedShares = useMemo(() => formatNumber(post.shares), [post.shares]);
 
   return (
     <div
@@ -62,10 +44,19 @@ export default function PostCard({
     >
       {/* Image */}
       {post.image_svg ? (
-        <div
-          className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
-          dangerouslySetInnerHTML={{ __html: post.image_svg }}
-        />
+        // Check if it's a base64 image or SVG markup
+        post.image_svg.startsWith("data:") ? (
+          <img
+            src={post.image_svg}
+            alt="Post"
+            className="w-full h-64 object-cover"
+          />
+        ) : (
+          <div
+            className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
+            dangerouslySetInnerHTML={{ __html: post.image_svg }}
+          />
+        )
       ) : (
         <div className="w-full h-64 bg-gradient-to-br from-blue-400 via-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-semibold">
           {post.category}
@@ -102,19 +93,19 @@ export default function PostCard({
         </p>
 
         {/* Date */}
-        <p className="text-xs text-gray-500 mb-4">{formatDate(post.date)}</p>
+        <p className="text-xs text-gray-500 mb-4">{formattedDate}</p>
 
         {/* Engagement Stats */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center gap-4 text-sm text-gray-600 font-semibold">
             <span className="flex items-center gap-1">
-              <span>👍</span> {formatNumber(post.likes)}
+              <span>👍</span> {formattedLikes}
             </span>
             <span className="flex items-center gap-1">
-              <span>💬</span> {formatNumber(post.comments)}
+              <span>💬</span> {formattedComments}
             </span>
             <span className="flex items-center gap-1">
-              <span>📊</span> {formatNumber(post.shares)}
+              <span>📊</span> {formattedShares}
             </span>
           </div>
           <div className="flex items-center gap-2">

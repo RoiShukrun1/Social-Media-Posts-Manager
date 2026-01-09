@@ -1,23 +1,20 @@
+/**
+ * Filters
+ *
+ * Advanced filtering component for posts.
+ * Provides search, category, date range, and sorting options with validation.
+ * Includes debounced search and real-time error feedback.
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { PostFilters } from "../types";
+import { CATEGORIES } from "../constants/categories";
+import { COLORS, DEFAULTS } from "../constants/config";
 
 interface FiltersProps {
   filters: PostFilters;
   onFiltersChange: (filters: PostFilters) => void;
 }
-
-const CATEGORIES = [
-  "Technology",
-  "Business",
-  "Entertainment",
-  "Health",
-  "Sports",
-  "Travel",
-  "Food",
-  "Fashion",
-  "Education",
-  "Science",
-];
 
 const SORT_OPTIONS = ["date", "likes", "comments", "shares", "engagement rate"];
 
@@ -42,30 +39,37 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const [localCategory, setLocalCategory] = useState(filters.category || "");
   const [localDateFrom, setLocalDateFrom] = useState(filters.dateFrom || "");
   const [localDateTo, setLocalDateTo] = useState(filters.dateTo || "");
-  const [localSortBy, setLocalSortBy] = useState<string>(filters.sortBy || "");
+  const [localSortBy, setLocalSortBy] = useState<string>(
+    filters.sortBy && filters.sortBy !== "date" ? filters.sortBy : ""
+  );
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const isFirstRender = useRef(true);
+  const hasUserInteracted = useRef(false);
+  const filtersRef = useRef(filters);
 
-  // Debounce search
+  // Keep filters ref up to date
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    filtersRef.current = filters;
+  }, [filters]);
+
+  // Debounce search - only trigger if user has actually interacted
+  useEffect(() => {
+    if (!hasUserInteracted.current) {
       return;
     }
 
     const timer = setTimeout(() => {
       onFiltersChange({
-        ...filters,
+        ...filtersRef.current,
         search: localSearch || undefined,
         page: 1,
       });
-    }, 500);
+    }, DEFAULTS.debounceMs);
 
     return () => clearTimeout(timer);
-  }, [localSearch]);
+  }, [localSearch, onFiltersChange]);
 
   const validateDate = (dateStr: string): boolean => {
-    if (!dateStr) return true; // Empty is valid
+    if (!dateStr) return true;
 
     // Check format dd/mm/yyyy
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
@@ -150,7 +154,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
       : undefined;
 
     // Transform sortBy to API format (handle "engagement rate" -> "engagement_rate")
-    let apiSortBy: PostFilters["sortBy"] | undefined;
+    let apiSortBy: PostFilters["sortBy"] = "date"; // Default to "date"
     if (localSortBy) {
       const sortLower = localSortBy.toLowerCase();
       const matchedKey = Object.keys(SORT_DISPLAY_TO_API).find(
@@ -174,6 +178,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   };
 
   const handleClearFilters = () => {
+    hasUserInteracted.current = false;
     setLocalSearch("");
     setLocalCategory("");
     setLocalDateFrom("");
@@ -183,7 +188,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
     onFiltersChange({
       order: "DESC",
       page: 1,
-      limit: 20,
+      limit: DEFAULTS.pageSize,
     });
   };
 
@@ -209,7 +214,10 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
             id="search"
             type="text"
             value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
+            onChange={(e) => {
+              hasUserInteracted.current = true;
+              setLocalSearch(e.target.value);
+            }}
             onKeyDown={handleKeyDown}
             placeholder="Search posts..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -345,7 +353,14 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={handleApplyFilters}
-          className="px-6 py-2 bg-[#4299E1] text-white rounded-lg font-semibold hover:bg-[#3182CE] transition-colors"
+          style={{ backgroundColor: COLORS.primary }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.primaryHover)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.primary)
+          }
+          className="px-6 py-2 text-white rounded-lg font-semibold transition-colors"
         >
           Apply Filters
         </button>

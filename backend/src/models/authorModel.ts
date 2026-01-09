@@ -1,3 +1,11 @@
+/**
+ * authorModel.ts
+ *
+ * Author data access layer.
+ * Provides methods for CRUD operations on authors table.
+ * Handles author retrieval, creation, and updates with proper validation.
+ */
+
 import db from "../db/database";
 import type { Author } from "../types";
 
@@ -37,7 +45,7 @@ export class AuthorModel {
     author: Partial<Omit<Author, "id">>
   ): boolean {
     const fields: string[] = [];
-    const values: any[] = [];
+    const values: (string | number | boolean)[] = [];
 
     if (author.first_name !== undefined) {
       fields.push("first_name = ?");

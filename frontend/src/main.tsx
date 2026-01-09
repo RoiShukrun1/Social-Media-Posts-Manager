@@ -1,3 +1,10 @@
+/**
+ * main.tsx
+ * 
+ * Application entry point.
+ * Initializes React root and renders the main App component.
+ */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
