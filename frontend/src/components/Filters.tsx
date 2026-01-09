@@ -39,9 +39,11 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const [localCategory, setLocalCategory] = useState(filters.category || "");
   const [localDateFrom, setLocalDateFrom] = useState(filters.dateFrom || "");
   const [localDateTo, setLocalDateTo] = useState(filters.dateTo || "");
-  const [localSortBy, setLocalSortBy] = useState<string>(filters.sortBy || "");
+  const [localSortBy, setLocalSortBy] = useState<string>(
+    filters.sortBy && filters.sortBy !== "date" ? filters.sortBy : ""
+  );
   const [errors, setErrors] = useState<ValidationErrors>({});
-  const isFirstRender = useRef(true);
+  const hasUserInteracted = useRef(false);
   const filtersRef = useRef(filters);
 
   // Keep filters ref up to date
@@ -49,10 +51,9 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
     filtersRef.current = filters;
   }, [filters]);
 
-  // Debounce search
+  // Debounce search - only trigger if user has actually interacted
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (!hasUserInteracted.current) {
       return;
     }
 
@@ -68,7 +69,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   }, [localSearch, onFiltersChange]);
 
   const validateDate = (dateStr: string): boolean => {
-    if (!dateStr) return true; // Empty is valid
+    if (!dateStr) return true;
 
     // Check format dd/mm/yyyy
     const dateRegex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
@@ -153,7 +154,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
       : undefined;
 
     // Transform sortBy to API format (handle "engagement rate" -> "engagement_rate")
-    let apiSortBy: PostFilters["sortBy"] | undefined;
+    let apiSortBy: PostFilters["sortBy"] = "date"; // Default to "date"
     if (localSortBy) {
       const sortLower = localSortBy.toLowerCase();
       const matchedKey = Object.keys(SORT_DISPLAY_TO_API).find(
@@ -177,6 +178,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   };
 
   const handleClearFilters = () => {
+    hasUserInteracted.current = false;
     setLocalSearch("");
     setLocalCategory("");
     setLocalDateFrom("");
@@ -212,7 +214,10 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
             id="search"
             type="text"
             value={localSearch}
-            onChange={(e) => setLocalSearch(e.target.value)}
+            onChange={(e) => {
+              hasUserInteracted.current = true;
+              setLocalSearch(e.target.value);
+            }}
             onKeyDown={handleKeyDown}
             placeholder="Search posts..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
