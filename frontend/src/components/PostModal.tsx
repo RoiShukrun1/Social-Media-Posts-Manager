@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { getTags, createAuthor, updateAuthor } from "../services/api";
 import { Post, CreatePostData, UpdatePostData } from "../types";
 import { CATEGORIES } from "../constants/categories";
@@ -210,7 +211,7 @@ export default function PostModal({
         authorId = newAuthor.id;
       } catch (error) {
         console.error("Failed to create author:", error);
-        alert(
+        toast.error(
           "Failed to create author. Please check if the email already exists."
         );
         return;
@@ -239,7 +240,7 @@ export default function PostModal({
           });
         } catch (error) {
           console.error("Failed to update author:", error);
-          alert(
+          toast.error(
             "Failed to update author. Please check if the email already exists."
           );
           return;
@@ -323,7 +324,11 @@ export default function PostModal({
                     }
                   }}
                   placeholder="First Name"
-                  style={{ borderColor: errors.first_name ? COLORS.errorBorder : COLORS.gray[300] }}
+                  style={{
+                    borderColor: errors.first_name
+                      ? COLORS.errorBorder
+                      : COLORS.gray[300],
+                  }}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
                 {errors.first_name && (
@@ -354,7 +359,11 @@ export default function PostModal({
                     }
                   }}
                   placeholder="Last Name"
-                  style={{ borderColor: errors.last_name ? COLORS.errorBorder : COLORS.gray[300] }}
+                  style={{
+                    borderColor: errors.last_name
+                      ? COLORS.errorBorder
+                      : COLORS.gray[300],
+                  }}
                   className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
                 {errors.last_name && (
@@ -365,7 +374,7 @@ export default function PostModal({
               </div>
             </div>
             <div>
-                <input
+              <input
                 type="email"
                 value={authorData.email}
                 onChange={(e) => {
@@ -386,7 +395,11 @@ export default function PostModal({
                 aria-required="true"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? "email-error" : undefined}
-                style={{ borderColor: errors.email ? COLORS.errorBorder : COLORS.gray[300] }}
+                style={{
+                  borderColor: errors.email
+                    ? COLORS.errorBorder
+                    : COLORS.gray[300],
+                }}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               {errors.email && (
@@ -457,7 +470,11 @@ export default function PostModal({
                 }
               }}
               rows={4}
-              style={{ borderColor: errors.text ? COLORS.errorBorder : COLORS.gray[300] }}
+              style={{
+                borderColor: errors.text
+                  ? COLORS.errorBorder
+                  : COLORS.gray[300],
+              }}
               className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="What's on your mind?"
             />
@@ -615,7 +632,11 @@ export default function PostModal({
                     e.preventDefault();
                     handleTagToggle(tag.name);
                   }}
-                  style={formData.tags.includes(tag.name) ? { backgroundColor: COLORS.primary } : undefined}
+                  style={
+                    formData.tags.includes(tag.name)
+                      ? { backgroundColor: COLORS.primary }
+                      : undefined
+                  }
                   className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${
                     formData.tags.includes(tag.name)
                       ? "text-white"
@@ -666,7 +687,9 @@ export default function PostModal({
                   e.currentTarget.style.backgroundColor = COLORS.successHover;
                 }
               }}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.success)}
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = COLORS.success)
+              }
               className="px-6 py-2 text-white rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Saving..." : post ? "Save Changes" : "Create Post"}

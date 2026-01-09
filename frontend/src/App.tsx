@@ -6,6 +6,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { getPosts, createPost, updatePost, deletePost } from "./services/api";
 import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
 import { getErrorMessage } from "./types/errors";
@@ -20,6 +21,7 @@ import DeleteModal from "./components/DeleteModal";
 import PostViewModal from "./components/PostViewModal";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import EmptyState from "./components/EmptyState";
+import ToastProvider from "./components/ToastProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -56,6 +58,8 @@ function PostsManager() {
     onSuccess: async () => {
       // Close modal first for better UX
       setIsCreateModalOpen(false);
+      // Show success toast
+      toast.success("Post created successfully!");
       // Then invalidate and refetch both posts and stats
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["posts"] }),
@@ -70,7 +74,7 @@ function PostsManager() {
     onError: (error: unknown) => {
       console.error("Create mutation failed:", error);
       const errorMessage = getErrorMessage(error);
-      alert("Failed to create post: " + errorMessage);
+      toast.error("Failed to create post: " + errorMessage);
     },
   });
 
@@ -81,6 +85,8 @@ function PostsManager() {
     onSuccess: async () => {
       // Close modal first for better UX
       setEditingPost(null);
+      // Show success toast
+      toast.success("Post updated successfully!");
       // Then invalidate and refetch both posts and stats
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["posts"] }),
@@ -95,7 +101,7 @@ function PostsManager() {
     onError: (error: unknown) => {
       console.error("Update mutation failed:", error);
       const errorMessage = getErrorMessage(error);
-      alert("Failed to update post: " + errorMessage);
+      toast.error("Failed to update post: " + errorMessage);
     },
   });
 
@@ -105,6 +111,8 @@ function PostsManager() {
     onSuccess: async () => {
       // Close modal first for better UX
       setDeletingPost(null);
+      // Show success toast
+      toast.success("Post deleted successfully!");
       // Then invalidate and refetch both posts and stats
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ["posts"] }),
@@ -119,7 +127,7 @@ function PostsManager() {
     onError: (error: unknown) => {
       console.error("Delete mutation failed:", error);
       const errorMessage = getErrorMessage(error);
-      alert("Failed to delete post: " + errorMessage);
+      toast.error("Failed to delete post: " + errorMessage);
     },
   });
 
@@ -237,6 +245,7 @@ function PostsManager() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
+      <ToastProvider />
       <PostsManager />
     </QueryClientProvider>
   );

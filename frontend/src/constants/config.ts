@@ -75,3 +75,30 @@ export const HTTP_STATUS = {
   NOT_FOUND: 404,
   INTERNAL_SERVER_ERROR: 500,
 } as const;
+
+/**
+ * Toast notification configuration
+ */
+export const TOAST_CONFIG = {
+  position: "top-right" as const,
+  duration: 4000,
+  style: {
+    background: "#fff",
+    color: COLORS.gray[700],
+    padding: "16px",
+    borderRadius: "8px",
+    boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+  },
+  success: {
+    iconTheme: {
+      primary: COLORS.success,
+      secondary: "#fff",
+    },
+  },
+  error: {
+    iconTheme: {
+      primary: COLORS.error,
+      secondary: "#fff",
+    },
+  },
+} as const;
