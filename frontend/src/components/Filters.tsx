@@ -1,3 +1,11 @@
+/**
+ * Filters
+ *
+ * Advanced filtering component for posts.
+ * Provides search, category, date range, and sorting options with validation.
+ * Includes debounced search and real-time error feedback.
+ */
+
 import { useState, useEffect, useRef } from "react";
 import { PostFilters } from "../types";
 import { CATEGORIES } from "../constants/categories";
@@ -51,7 +59,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
     }, DEFAULTS.debounceMs);
 
     return () => clearTimeout(timer);
-  }, [localSearch]);
+  }, [localSearch, filters, onFiltersChange]);
 
   const validateDate = (dateStr: string): boolean => {
     if (!dateStr) return true; // Empty is valid
@@ -335,8 +343,12 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
         <button
           onClick={handleApplyFilters}
           style={{ backgroundColor: COLORS.primary }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.primaryHover)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.primary)
+          }
           className="px-6 py-2 text-white rounded-lg font-semibold transition-colors"
         >
           Apply Filters

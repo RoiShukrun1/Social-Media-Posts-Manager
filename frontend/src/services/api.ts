@@ -1,3 +1,11 @@
+/**
+ * api.ts
+ * 
+ * API service layer for all backend communication.
+ * Handles HTTP requests for posts, authors, tags, and statistics.
+ * Uses axios for HTTP client with centralized configuration.
+ */
+
 import axios from "axios";
 import type {
   Post,

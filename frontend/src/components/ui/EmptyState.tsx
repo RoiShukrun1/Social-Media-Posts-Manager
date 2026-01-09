@@ -1,3 +1,10 @@
+/**
+ * EmptyState
+ * 
+ * Component displayed when no posts match the current filters.
+ * Provides user feedback and encourages action.
+ */
+
 interface EmptyStateProps {
   message?: string;
 }

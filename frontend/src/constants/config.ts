@@ -1,5 +1,8 @@
 /**
- * Application configuration constants
+ * constants/config.ts
+ * 
+ * Application-wide configuration constants.
+ * Centralizes colors, defaults, timing, and toast notification settings.
  */
 
 /**

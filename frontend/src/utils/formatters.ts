@@ -1,3 +1,10 @@
+/**
+ * formatters.ts
+ * 
+ * Utility functions for formatting numbers and dates.
+ * Provides consistent formatting across the application.
+ */
+
 // Time constants
 const MS_PER_SECOND = 1000;
 const SECONDS_PER_MINUTE = 60;

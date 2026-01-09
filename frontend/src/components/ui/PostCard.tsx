@@ -1,5 +1,13 @@
-import { Post } from "../types";
-import { formatDate, formatNumber } from "../utils/formatters";
+/**
+ * PostCard
+ *
+ * Card component for displaying individual post in the grid view.
+ * Shows post preview with author info, engagement stats, and action buttons.
+ */
+
+import { useMemo } from "react";
+import { Post } from "../../types";
+import { formatDate, formatNumber } from "../../utils/formatters";
 
 interface PostCardProps {
   post: Post;
@@ -14,6 +22,12 @@ export default function PostCard({
   onDelete,
   onView,
 }: PostCardProps) {
+  // Memoize expensive formatting operations
+  const formattedDate = useMemo(() => formatDate(post.date), [post.date]);
+  const formattedLikes = useMemo(() => formatNumber(post.likes), [post.likes]);
+  const formattedComments = useMemo(() => formatNumber(post.comments), [post.comments]);
+  const formattedShares = useMemo(() => formatNumber(post.shares), [post.shares]);
+
   return (
     <div
       className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden cursor-pointer"
@@ -70,19 +84,19 @@ export default function PostCard({
         </p>
 
         {/* Date */}
-        <p className="text-xs text-gray-500 mb-4">{formatDate(post.date)}</p>
+        <p className="text-xs text-gray-500 mb-4">{formattedDate}</p>
 
         {/* Engagement Stats */}
         <div className="flex items-center justify-between pt-4 border-t border-gray-100">
           <div className="flex items-center gap-4 text-sm text-gray-600 font-semibold">
             <span className="flex items-center gap-1">
-              <span>👍</span> {formatNumber(post.likes)}
+              <span>👍</span> {formattedLikes}
             </span>
             <span className="flex items-center gap-1">
-              <span>💬</span> {formatNumber(post.comments)}
+              <span>💬</span> {formattedComments}
             </span>
             <span className="flex items-center gap-1">
-              <span>📊</span> {formatNumber(post.shares)}
+              <span>📊</span> {formattedShares}
             </span>
           </div>
           <div className="flex items-center gap-2">

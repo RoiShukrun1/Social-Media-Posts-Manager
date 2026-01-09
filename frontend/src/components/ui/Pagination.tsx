@@ -1,5 +1,13 @@
-import { PaginationMeta } from "../types";
-import { COLORS, DEFAULTS } from "../constants/config";
+/**
+ * Pagination
+ *
+ * Pagination component for navigating through pages of posts.
+ * Displays page numbers, navigation buttons, and current page info.
+ */
+
+import { useMemo } from "react";
+import { PaginationMeta } from "../../types";
+import { COLORS, DEFAULTS } from "../../constants/config";
 
 interface PaginationProps {
   pagination: PaginationMeta;
@@ -12,7 +20,8 @@ export default function Pagination({
 }: PaginationProps) {
   const { page, totalPages } = pagination;
 
-  const getPageNumbers = () => {
+  // Memoize page number calculation to avoid recalculating on every render
+  const pageNumbers = useMemo(() => {
     const pages: number[] = [];
     const maxVisible = DEFAULTS.paginationVisible;
 
@@ -37,7 +46,7 @@ export default function Pagination({
     }
 
     return pages;
-  };
+  }, [page, totalPages]);
 
   return (
     <nav
@@ -56,7 +65,7 @@ export default function Pagination({
       </button>
 
       <div className="flex gap-2" role="group" aria-label="Pagination pages">
-        {getPageNumbers().map((pageNum) => (
+        {pageNumbers.map((pageNum) => (
           <button
             key={pageNum}
             onClick={() => onPageChange(pageNum)}

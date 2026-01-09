@@ -1,3 +1,10 @@
+/**
+ * LoadingSkeleton
+ * 
+ * Loading placeholder component with animated skeleton cards.
+ * Displayed while posts are being fetched from the API.
+ */
+
 export default function LoadingSkeleton() {
   return (
     <div

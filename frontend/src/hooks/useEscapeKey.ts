@@ -1,3 +1,10 @@
+/**
+ * useEscapeKey
+ * 
+ * Custom React hook for handling Escape key press events.
+ * Commonly used for closing modals and dialogs.
+ */
+
 import { useEffect } from "react";
 
 /**

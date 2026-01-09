@@ -1,6 +1,8 @@
 /**
- * List of available post categories
- * These categories match the actual data in the CSV
+ * constants/categories.ts
+ *
+ * Defines available post categories for the application.
+ * Categories match the actual data in the CSV and are used in filters and forms.
  */
 export const CATEGORIES = [
   "Business",

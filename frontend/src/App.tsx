@@ -1,4 +1,12 @@
-import { useState } from "react";
+/**
+ * App.tsx
+ *
+ * Main application component and entry point.
+ * Manages global state, React Query setup, and orchestrates the post management system.
+ * Handles CRUD operations for posts and coordinates between components.
+ */
+
+import { useState, useCallback } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -12,16 +20,16 @@ import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
 import { getErrorMessage } from "./types/errors";
 import { DEFAULTS } from "./constants/config";
 
-import StatsHeader from "./components/StatsHeader";
+import StatsHeader from "./components/ui/StatsHeader";
 import Filters from "./components/Filters";
-import PostCard from "./components/PostCard";
-import Pagination from "./components/Pagination";
-import PostModal from "./components/PostModal";
-import DeleteModal from "./components/DeleteModal";
-import PostViewModal from "./components/PostViewModal";
-import LoadingSkeleton from "./components/LoadingSkeleton";
-import EmptyState from "./components/EmptyState";
-import ToastProvider from "./components/ToastProvider";
+import PostCard from "./components/ui/PostCard";
+import Pagination from "./components/ui/Pagination";
+import PostModal from "./components/modals/PostModal";
+import DeleteModal from "./components/modals/DeleteModal";
+import PostViewModal from "./components/modals/PostViewModal";
+import LoadingSkeleton from "./components/ui/LoadingSkeleton";
+import EmptyState from "./components/ui/EmptyState";
+import ToastProvider from "./components/ui/ToastProvider";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -131,9 +139,9 @@ function PostsManager() {
     },
   });
 
-  const handleFilterChange = (newFilters: PostFilters) => {
+  const handleFilterChange = useCallback((newFilters: PostFilters) => {
     setFilters({ ...newFilters, page: 1 });
-  };
+  }, []);
 
   const handlePageChange = (page: number) => {
     setFilters({ ...filters, page });

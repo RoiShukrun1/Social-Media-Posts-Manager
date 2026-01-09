@@ -1,5 +1,8 @@
 /**
- * Type definitions for error handling
+ * types/errors.ts
+ * 
+ * Error handling utilities and type definitions.
+ * Provides consistent error message extraction from various error types.
  */
 
 /**

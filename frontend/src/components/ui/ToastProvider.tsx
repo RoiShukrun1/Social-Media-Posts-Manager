@@ -1,5 +1,12 @@
+/**
+ * ToastProvider
+ * 
+ * Configures and provides the toast notification system.
+ * Wraps react-hot-toast with custom styling and positioning.
+ */
+
 import { Toaster } from "react-hot-toast";
-import { TOAST_CONFIG } from "../constants/config";
+import { TOAST_CONFIG } from "../../constants/config";
 
 /**
  * Toast notification provider component

@@ -1,3 +1,10 @@
+/**
+ * useBodyScrollLock
+ * 
+ * Custom React hook to prevent body scroll when modals are open.
+ * Prevents background scrolling while overlay content is displayed.
+ */
+
 import { useEffect } from "react";
 
 /**

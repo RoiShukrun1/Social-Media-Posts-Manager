@@ -1,5 +1,8 @@
 /**
- * Custom event types for window events
+ * types/events.ts
+ * 
+ * Custom event type definitions for application-wide events.
+ * Extends WindowEventMap with custom events for component communication.
  */
 
 // Define custom event map

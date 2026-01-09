@@ -1,3 +1,10 @@
+/**
+ * types/index.ts
+ * 
+ * Core TypeScript type definitions for the application.
+ * Defines interfaces for posts, authors, tags, filters, and API responses.
+ */
+
 export interface Author {
   id: number;
   first_name: string;

@@ -1,7 +1,15 @@
-import { Post } from "../types";
-import { formatDate, formatNumber } from "../utils/formatters";
-import { useEscapeKey } from "../hooks/useEscapeKey";
-import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
+/**
+ * PostViewModal
+ * 
+ * Read-only modal component for viewing full post details.
+ * Displays post content, author information, and engagement statistics.
+ */
+
+import { useMemo } from "react";
+import { Post } from "../../types";
+import { formatDate, formatNumber } from "../../utils/formatters";
+import { useEscapeKey } from "../../hooks/useEscapeKey";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 
 interface PostViewModalProps {
   post: Post;
@@ -12,6 +20,12 @@ export default function PostViewModal({ post, onClose }: PostViewModalProps) {
   // Handle Escape key and prevent body scroll
   useEscapeKey(onClose);
   useBodyScrollLock();
+
+  // Memoize expensive formatting operations
+  const formattedDate = useMemo(() => formatDate(post.date), [post.date]);
+  const formattedLikes = useMemo(() => formatNumber(post.likes), [post.likes]);
+  const formattedComments = useMemo(() => formatNumber(post.comments), [post.comments]);
+  const formattedShares = useMemo(() => formatNumber(post.shares), [post.shares]);
 
   return (
     <div
@@ -97,25 +111,25 @@ export default function PostViewModal({ post, onClose }: PostViewModalProps) {
           )}
 
           {/* Date */}
-          <p className="text-sm text-gray-500 mb-6">{formatDate(post.date)}</p>
+          <p className="text-sm text-gray-500 mb-6">{formattedDate}</p>
 
           {/* Engagement Stats */}
           <div className="flex items-center gap-6 pt-6 border-t border-gray-200">
             <div className="flex items-center gap-2 text-gray-600">
               <span className="text-xl">👍</span>
-              <span className="font-semibold">{formatNumber(post.likes)}</span>
+              <span className="font-semibold">{formattedLikes}</span>
               <span className="text-sm text-gray-500">Likes</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <span className="text-xl">💬</span>
               <span className="font-semibold">
-                {formatNumber(post.comments)}
+                {formattedComments}
               </span>
               <span className="text-sm text-gray-500">Comments</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <span className="text-xl">📊</span>
-              <span className="font-semibold">{formatNumber(post.shares)}</span>
+              <span className="font-semibold">{formattedShares}</span>
               <span className="text-sm text-gray-500">Shares</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">

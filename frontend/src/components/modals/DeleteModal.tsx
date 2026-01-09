@@ -1,5 +1,12 @@
-import { Post } from "../types";
-import { useEscapeKey } from "../hooks/useEscapeKey";
+/**
+ * DeleteModal
+ *
+ * Confirmation modal for deleting posts.
+ * Displays post information and confirms user intent before deletion.
+ */
+
+import { Post } from "../../types";
+import { useEscapeKey } from "../../hooks/useEscapeKey";
 
 interface DeleteModalProps {
   isOpen: boolean;

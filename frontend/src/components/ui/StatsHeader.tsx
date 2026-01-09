@@ -1,7 +1,15 @@
+/**
+ * StatsHeader
+ *
+ * Header component displaying page title, statistics, and "Add Post" button.
+ * Fetches and displays aggregate statistics: total posts, likes, comments, and average engagement.
+ */
+
+import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getStats } from "../services/api";
-import { formatNumberCompact } from "../utils/formatters";
-import { COLORS } from "../constants/config";
+import { getStats } from "../../services/api";
+import { formatNumberCompact } from "../../utils/formatters";
+import { COLORS } from "../../constants/config";
 
 interface StatsHeaderProps {
   onAddPostClick: () => void;
@@ -12,6 +20,14 @@ export default function StatsHeader({ onAddPostClick }: StatsHeaderProps) {
     queryKey: ["stats"],
     queryFn: getStats,
   });
+
+  // Memoize formatted statistics to avoid recalculating on every render
+  const formattedStats = useMemo(() => ({
+    totalPosts: stats?.totalPosts ? stats.totalPosts.toLocaleString() : "0",
+    totalLikes: stats?.totalLikes ? formatNumberCompact(stats.totalLikes) : "0",
+    totalComments: stats?.totalComments ? formatNumberCompact(stats.totalComments) : "0",
+    avgEngagement: stats?.avgEngagementRate ? `${stats.avgEngagementRate.toFixed(1)}%` : "0%",
+  }), [stats]);
 
   if (isLoading) {
     return (
@@ -73,32 +89,10 @@ export default function StatsHeader({ onAddPostClick }: StatsHeaderProps) {
         role="region"
         aria-label="Post statistics"
       >
-        <StatCard
-          title="Total Posts"
-          value={stats?.totalPosts ? stats.totalPosts.toLocaleString() : "0"}
-        />
-        <StatCard
-          title="Total Likes"
-          value={
-            stats?.totalLikes ? formatNumberCompact(stats.totalLikes) : "0"
-          }
-        />
-        <StatCard
-          title="Total Comments"
-          value={
-            stats?.totalComments
-              ? formatNumberCompact(stats.totalComments)
-              : "0"
-          }
-        />
-        <StatCard
-          title="Avg Engagement"
-          value={
-            stats?.avgEngagementRate
-              ? `${stats.avgEngagementRate.toFixed(1)}%`
-              : "0%"
-          }
-        />
+        <StatCard title="Total Posts" value={formattedStats.totalPosts} />
+        <StatCard title="Total Likes" value={formattedStats.totalLikes} />
+        <StatCard title="Total Comments" value={formattedStats.totalComments} />
+        <StatCard title="Avg Engagement" value={formattedStats.avgEngagement} />
       </div>
     </div>
   );
