@@ -16,16 +16,9 @@ router.get("/", (req: Request, res: Response) => {
     const filters: any = {};
 
     if (req.query.category) filters.category = req.query.category;
-    if (req.query.authorId)
-      filters.authorId = parseInt(req.query.authorId as string);
-    if (req.query.tag) filters.tagName = req.query.tag;
     if (req.query.search) filters.search = req.query.search;
     if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
     if (req.query.dateTo) filters.dateTo = req.query.dateTo;
-    if (req.query.minLikes)
-      filters.minLikes = parseInt(req.query.minLikes as string);
-    if (req.query.minEngagement)
-      filters.minEngagement = parseFloat(req.query.minEngagement as string);
 
     const sort: any = {
       field: [
@@ -51,31 +44,6 @@ router.get("/", (req: Request, res: Response) => {
         total: result.total,
         totalPages: Math.ceil(result.total / limit),
       },
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// GET /api/posts/:id - Get single post
-router.get("/:id", (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id);
-    const post = PostModel.getPostById(id);
-
-    if (!post) {
-      return res.status(404).json({
-        success: false,
-        error: "Post not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: post,
     });
   } catch (error: any) {
     res.status(500).json({

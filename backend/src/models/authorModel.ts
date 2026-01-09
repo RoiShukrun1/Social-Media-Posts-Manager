@@ -2,14 +2,6 @@ import db from "../db/database";
 import type { Author } from "../types";
 
 export class AuthorModel {
-  static getAllAuthors(): Author[] {
-    const query = `
-      SELECT * FROM authors
-      ORDER BY last_name, first_name
-    `;
-    return db.prepare(query).all() as Author[];
-  }
-
   static getAuthorById(id: number): Author | null {
     const query = "SELECT * FROM authors WHERE id = ?";
     return db.prepare(query).get(id) as Author | null;
@@ -40,7 +32,10 @@ export class AuthorModel {
     return result.lastInsertRowid as number;
   }
 
-  static updateAuthor(id: number, author: Partial<Omit<Author, "id">>): boolean {
+  static updateAuthor(
+    id: number,
+    author: Partial<Omit<Author, "id">>
+  ): boolean {
     const fields: string[] = [];
     const values: any[] = [];
 

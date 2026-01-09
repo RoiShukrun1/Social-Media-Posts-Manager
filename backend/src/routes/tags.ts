@@ -1,16 +1,12 @@
-import { Router, Request, Response } from 'express';
-import { TagModel } from '../models/tagModel';
+import { Router, Request, Response } from "express";
+import { TagModel } from "../models/tagModel";
 
 const router = Router();
 
-// GET /api/tags - List all tags with post counts
-router.get('/', (req: Request, res: Response) => {
+// GET /api/tags - List all tags
+router.get("/", (req: Request, res: Response) => {
   try {
-    const withCounts = req.query.withCounts === 'true';
-    
-    const tags = withCounts 
-      ? TagModel.getTagsWithCounts()
-      : TagModel.getAllTags();
+    const tags = TagModel.getAllTags();
 
     res.json({
       success: true,
@@ -25,4 +21,3 @@ router.get('/', (req: Request, res: Response) => {
 });
 
 export default router;
-

@@ -3,48 +3,6 @@ import { AuthorModel } from "../models/authorModel";
 
 const router = Router();
 
-// GET /api/authors - List all authors
-router.get("/", (req: Request, res: Response) => {
-  try {
-    const authors = AuthorModel.getAllAuthors();
-
-    res.json({
-      success: true,
-      data: authors,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
-// GET /api/authors/:id - Get single author
-router.get("/:id", (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id);
-    const author = AuthorModel.getAuthorById(id);
-
-    if (!author) {
-      return res.status(404).json({
-        success: false,
-        error: "Author not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: author,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
 // POST /api/authors - Create new author
 router.post("/", (req: Request, res: Response) => {
   try {
@@ -56,7 +14,7 @@ router.post("/", (req: Request, res: Response) => {
       job_title,
       bio,
       follower_count,
-      verified
+      verified,
     } = req.body;
 
     // Validate required fields
@@ -144,7 +102,8 @@ router.put("/:id", (req: Request, res: Response) => {
     if (company !== undefined) updateData.company = company;
     if (job_title !== undefined) updateData.job_title = job_title;
     if (bio !== undefined) updateData.bio = bio;
-    if (follower_count !== undefined) updateData.follower_count = follower_count;
+    if (follower_count !== undefined)
+      updateData.follower_count = follower_count;
     if (verified !== undefined) updateData.verified = verified;
 
     const updated = AuthorModel.updateAuthor(id, updateData);

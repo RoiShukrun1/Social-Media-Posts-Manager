@@ -1,6 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { getTags } from "../services/api";
 import { PostFilters } from "../types";
 
 interface FiltersProps {
@@ -47,11 +45,6 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const [localSortBy, setLocalSortBy] = useState<string>(filters.sortBy || "");
   const [errors, setErrors] = useState<ValidationErrors>({});
   const isFirstRender = useRef(true);
-
-  useQuery({
-    queryKey: ["tags"],
-    queryFn: () => getTags(true),
-  });
 
   // Debounce search
   useEffect(() => {

@@ -3,13 +3,9 @@ import type { Post, PostWithAuthorAndTags, Author, Tag } from "../types";
 
 export interface PostFilters {
   category?: string;
-  authorId?: number;
-  tagName?: string;
   search?: string;
   dateFrom?: string;
   dateTo?: string;
-  minLikes?: number;
-  minEngagement?: number;
 }
 
 export interface PostSort {
@@ -37,11 +33,6 @@ export class PostModel {
       params.push(filters.category);
     }
 
-    if (filters.authorId) {
-      whereConditions.push("p.author_id = ?");
-      params.push(filters.authorId);
-    }
-
     if (filters.search) {
       whereConditions.push(
         "(p.text LIKE ? OR a.first_name LIKE ? OR a.last_name LIKE ?)"
@@ -58,25 +49,6 @@ export class PostModel {
     if (filters.dateTo) {
       whereConditions.push("p.date <= ?");
       params.push(filters.dateTo);
-    }
-
-    if (filters.minLikes) {
-      whereConditions.push("p.likes >= ?");
-      params.push(filters.minLikes);
-    }
-
-    if (filters.minEngagement) {
-      whereConditions.push("p.engagement_rate >= ?");
-      params.push(filters.minEngagement);
-    }
-
-    if (filters.tagName) {
-      whereConditions.push(`EXISTS (
-        SELECT 1 FROM post_tags pt
-        JOIN tags t ON pt.tag_id = t.id
-        WHERE pt.post_id = p.id AND t.name = ?
-      )`);
-      params.push(filters.tagName);
     }
 
     const whereClause =

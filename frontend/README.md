@@ -5,14 +5,20 @@ React + TypeScript + Tailwind CSS frontend for managing social media posts.
 ## Features
 
 - 📊 Real-time statistics dashboard
-- 🔍 Advanced filtering and search
-- 🏷️ Filter by tags and categories
-- 📅 Date range filtering
-- ➕ Create new posts
-- ✏️ Edit existing posts
+- 🔍 Advanced filtering and search (debounced)
+- 📅 Date range filtering (dd/mm/yyyy)
+- 🔤 Category filtering (case-insensitive)
+- 📈 Sort by multiple metrics
+- ➕ Create new posts with inline validation
+- 👤 Create authors dynamically (free text fields)
+- ✏️ Edit existing posts and author details
 - 🗑️ Delete posts with confirmation
-- 📱 Fully responsive design
+- 👁️ Expand posts to view full text (click on card)
+- ⌨️ Enter key support for filters
+- ♿ Full accessibility (ARIA labels, keyboard navigation)
+- 📱 Fully responsive design (mobile/tablet/desktop)
 - ⚡ Fast and optimized with React Query
+- 🎨 System fonts (no Google Fonts)
 
 ## Tech Stack
 
@@ -80,6 +86,7 @@ src/
 │   ├── Filters.tsx     # Filter controls
 │   ├── PostCard.tsx    # Post display card
 │   ├── PostModal.tsx   # Create/edit post modal
+│   ├── PostViewModal.tsx # Expanded post view
 │   ├── DeleteModal.tsx # Delete confirmation
 │   ├── Pagination.tsx  # Pagination controls
 │   ├── LoadingSkeleton.tsx # Loading state
@@ -97,12 +104,12 @@ src/
 
 ### Filtering
 
-- Search by post text or author name
+- Search by post text or author name (debounced, 500ms)
 - Filter by category (10 categories)
-- Filter by tags (11 tags with post counts)
-- Date range filtering (from/to dates)
+- Date range filtering (dd/mm/yyyy format)
 - Sort by: date, likes, comments, shares, engagement rate
 - Sort order: ascending or descending
+- Enter key triggers filter application
 
 ### CRUD Operations
 
@@ -122,11 +129,12 @@ src/
 Connects to backend API at http://localhost:3000/api
 
 Endpoints used:
-- `GET /api/posts` - List posts with filters
-- `GET /api/posts/:id` - Get single post
-- `POST /api/posts` - Create post
-- `PUT /api/posts/:id` - Update post
+
+- `GET /api/posts` - List posts with filters (search, category, dateFrom, dateTo, sortBy, order, page, limit)
+- `POST /api/posts` - Create new post
+- `PUT /api/posts/:id` - Update existing post
 - `DELETE /api/posts/:id` - Delete post
-- `GET /api/authors` - List authors
-- `GET /api/tags` - List tags
-- `GET /api/stats` - Get statistics
+- `POST /api/authors` - Create new author
+- `PUT /api/authors/:id` - Update author
+- `GET /api/tags` - List all tags
+- `GET /api/stats` - Get dashboard statistics (4 metrics)

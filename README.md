@@ -20,12 +20,15 @@ A full-stack application for managing social media posts with data cleaning, RES
 ## 📸 Screenshots
 
 ### Dashboard
+
 ![Dashboard with stats and post listing]
 
 ### Create/Edit Post
+
 ![Modal form for creating/editing posts]
 
 ### Filters
+
 ![Advanced filtering options]
 
 ## 🏗 Architecture
@@ -33,6 +36,7 @@ A full-stack application for managing social media posts with data cleaning, RES
 ### Tech Stack
 
 **Frontend**:
+
 - React 19 + TypeScript
 - Vite (build tool)
 - Tailwind CSS (styling)
@@ -40,12 +44,14 @@ A full-stack application for managing social media posts with data cleaning, RES
 - Axios (HTTP client)
 
 **Backend**:
+
 - Node.js + TypeScript
 - Express.js (REST API)
 - SQLite3 with better-sqlite3
 - Zod (validation)
 
 **Data Processing**:
+
 - Python 3 + pandas
 - Data cleaning and normalization
 - CSV processing
@@ -112,6 +118,7 @@ python clean_csv.py
 ```
 
 This will:
+
 - Clean all 25,000 rows
 - Fix 12 data quality issues
 - Generate `data/social_media_posts_data_clean.csv`
@@ -127,6 +134,7 @@ npm run dev         # Starts server on http://localhost:3000
 ```
 
 The backend will:
+
 - Create SQLite database
 - Import all 25,000 posts
 - Start Express server
@@ -183,29 +191,37 @@ social-media-posts-manager/
 ## 📡 API Endpoints
 
 ### Posts
-- `GET /api/posts` - List posts (with filters, sorting, pagination)
-- `GET /api/posts/:id` - Get single post
+
+- `GET /api/posts` - List posts with filters, sorting, and pagination
+  - Query params: `search`, `category`, `dateFrom`, `dateTo`, `sortBy`, `order`, `page`, `limit`
 - `POST /api/posts` - Create new post
-- `PUT /api/posts/:id` - Update post
+- `PUT /api/posts/:id` - Update existing post
 - `DELETE /api/posts/:id` - Delete post
 
 ### Authors
-- `GET /api/authors` - List all authors
-- `GET /api/authors/:id` - Get single author
+
+- `POST /api/authors` - Create new author
+- `PUT /api/authors/:id` - Update author details
 
 ### Tags
-- `GET /api/tags?withCounts=true` - List tags with post counts
+
+- `GET /api/tags` - List all tags (alphabetically sorted)
 
 ### Stats
-- `GET /api/stats` - Get dashboard statistics
 
-See [API_ENDPOINTS.md](API_ENDPOINTS.md) for detailed documentation.
+- `GET /api/stats` - Dashboard statistics
+  - Returns: `totalPosts`, `totalLikes`, `totalComments`, `avgEngagementRate`
+
+**Base URL**: `http://localhost:3000/api`
+
+All endpoints return JSON with `{ success: boolean, data: any }` format.
 
 ## 🧹 Data Cleaning
 
 The original dataset had **12 types of data quality issues** affecting thousands of rows:
 
 ### Issues Fixed
+
 1. **Column Headers** - Trailing spaces removed
 2. **Date Formats** - 3 formats normalized to ISO 8601
 3. **Numeric Quotes** - 7,409 values cleaned
@@ -224,24 +240,29 @@ See [scripts/CSV_CLEANING_PROCESS.md](scripts/CSV_CLEANING_PROCESS.md) for detai
 ## 🎨 Design System
 
 ### Colors
+
 - **Primary**: `#4299e1` (Blue)
 - **Secondary**: `#48bb78` (Green)
 - **Background**: `#f5f7fa` (Light Gray)
 
 ### Spacing
+
 - 8px grid system: 8px, 16px, 24px, 32px
 
 ### Components
+
 - Cards: 12px border radius, subtle shadows
 - Buttons: 8px border radius, smooth transitions
 - All interactive elements: hover effects
 
 ### Icons (Emojis)
+
 ✏️ Edit | 🗑️ Delete | ➕ Add | 👍 Likes | 💬 Comments | 📊 Shares
 
 ## 🧪 Testing
 
 ### Backend Testing
+
 ```bash
 cd backend
 npm run dev
@@ -253,6 +274,7 @@ curl "http://localhost:3000/api/posts?limit=5"
 ```
 
 ### Frontend Testing
+
 1. Start both servers (backend + frontend)
 2. Open http://localhost:5173
 3. Test features:
@@ -274,12 +296,14 @@ curl "http://localhost:3000/api/posts?limit=5"
 ## 🎯 Features Implemented
 
 ### Phase 1: Data Cleaning ✅
+
 - [x] Python cleaning script
 - [x] 12 issue categories fixed
 - [x] Quality report generated
 - [x] Clean CSV output
 
 ### Phase 2: Backend API ✅
+
 - [x] Normalized SQLite schema
 - [x] Data import on startup
 - [x] 9 REST API endpoints
@@ -289,6 +313,7 @@ curl "http://localhost:3000/api/posts?limit=5"
 - [x] Error handling
 
 ### Phase 3: Frontend ✅
+
 - [x] React + TypeScript + Tailwind
 - [x] Dashboard with stats
 - [x] Post listing with filters
@@ -303,28 +328,30 @@ curl "http://localhost:3000/api/posts?limit=5"
 ## 🔧 Configuration
 
 ### Backend Port
+
 Default: `3000`
 Change in: `backend/src/server.ts`
 
 ### Frontend Port
+
 Default: `5173`
 Change in: `frontend/vite.config.ts`
 
 ### Database Location
+
 Default: `backend/data/posts.db`
 Change in: `backend/src/db/database.ts`
 
 ## 📝 Documentation
 
-- [API_ENDPOINTS.md](API_ENDPOINTS.md) - Complete API reference
-- [BACKEND_COMPLETE.md](BACKEND_COMPLETE.md) - Backend implementation details
-- [FRONTEND_COMPLETE.md](FRONTEND_COMPLETE.md) - Frontend implementation details
+- [backend/README.md](backend/README.md) - Backend setup and API details
+- [frontend/README.md](frontend/README.md) - Frontend setup and components
 - [scripts/CSV_CLEANING_PROCESS.md](scripts/CSV_CLEANING_PROCESS.md) - Data cleaning process
-- [QUICK_START.md](QUICK_START.md) - Quick start guide
 
 ## 🐛 Troubleshooting
 
 ### Backend won't start
+
 ```bash
 cd backend
 rm -rf node_modules package-lock.json
@@ -334,6 +361,7 @@ npm run dev
 ```
 
 ### Frontend build errors
+
 ```bash
 cd frontend
 rm -rf node_modules package-lock.json
@@ -342,6 +370,7 @@ npm run dev
 ```
 
 ### Database issues
+
 ```bash
 cd backend
 rm data/posts.db

@@ -33,7 +33,7 @@ export default function PostModal({
 }: PostModalProps) {
   const { data: availableTags = [] } = useQuery({
     queryKey: ["tags"],
-    queryFn: () => getTags(false),
+    queryFn: getTags,
   });
 
   const [formData, setFormData] = useState<CreatePostData>({
@@ -195,10 +195,13 @@ export default function PostModal({
     const dateTime = `${formData.date} 00:00:00`;
 
     // Calculate engagement rate if not set
+    // Formula: Standard social media engagement rate
+    // engagement_rate = (total_engagements / follower_count) × 100
+    // Using 10,000 as default follower count for new authors
     const totalEngagement = (formData.likes || 0) + (formData.comments || 0);
     const engagementRate =
       formData.engagement_rate ||
-      (totalEngagement > 0 ? (totalEngagement / 1000) * 100 : 0);
+      (totalEngagement > 0 ? (totalEngagement / 10000) * 100 : 0);
 
     let authorId = formData.author_id;
 
@@ -218,7 +221,7 @@ export default function PostModal({
           company: authorData.company,
           job_title: authorData.job_title,
           bio: authorData.bio,
-          follower_count: 0,
+          follower_count: 10000,
           verified: false,
         });
         authorId = newAuthor.id;

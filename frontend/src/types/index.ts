@@ -31,27 +31,13 @@ export interface Post {
 export interface Tag {
   id: number;
   name: string;
-  count?: number;
 }
 
 export interface Stats {
   totalPosts: number;
-  totalAuthors: number;
-  totalTags: number;
   totalLikes: number;
   totalComments: number;
-  totalShares: number;
   avgEngagementRate: number;
-  postsByCategory: Array<{ category: string; count: number }>;
-  topAuthors: Array<{
-    id: number;
-    first_name: string;
-    last_name: string;
-    post_count: number;
-    total_likes: number;
-  }>;
-  topTags: Array<{ name: string; count: number }>;
-  recentPosts: number;
 }
 
 export interface PaginationMeta {
@@ -70,11 +56,8 @@ export interface PostsResponse {
 export interface PostFilters {
   search?: string;
   category?: string;
-  tag?: string;
   dateFrom?: string;
   dateTo?: string;
-  minLikes?: number;
-  minEngagement?: number;
   sortBy?: "date" | "likes" | "comments" | "shares" | "engagement_rate";
   order?: "ASC" | "DESC";
   page?: number;
