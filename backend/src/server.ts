@@ -60,12 +60,11 @@ app.listen(PORT, () => {
   console.log(
     "  GET    /api/posts          - List posts (with filters, sorting, pagination)"
   );
-  console.log("  GET    /api/posts/:id      - Get single post");
   console.log("  POST   /api/posts          - Create new post");
   console.log("  PUT    /api/posts/:id      - Update post");
   console.log("  DELETE /api/posts/:id      - Delete post");
-  console.log("  GET    /api/authors        - List all authors");
-  console.log("  GET    /api/authors/:id    - Get single author");
+  console.log("  POST   /api/authors        - Create new author");
+  console.log("  PUT    /api/authors/:id    - Update author");
   console.log("  GET    /api/tags           - List all tags");
   console.log("  GET    /api/stats          - Get dashboard statistics");
   console.log(

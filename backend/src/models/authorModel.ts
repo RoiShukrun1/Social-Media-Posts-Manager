@@ -2,14 +2,6 @@ import db from "../db/database";
 import type { Author } from "../types";
 
 export class AuthorModel {
-  static getAllAuthors(): Author[] {
-    const query = `
-      SELECT * FROM authors
-      ORDER BY last_name, first_name
-    `;
-    return db.prepare(query).all() as Author[];
-  }
-
   static getAuthorById(id: number): Author | null {
     const query = "SELECT * FROM authors WHERE id = ?";
     return db.prepare(query).get(id) as Author | null;
@@ -38,5 +30,58 @@ export class AuthorModel {
     );
 
     return result.lastInsertRowid as number;
+  }
+
+  static updateAuthor(
+    id: number,
+    author: Partial<Omit<Author, "id">>
+  ): boolean {
+    const fields: string[] = [];
+    const values: any[] = [];
+
+    if (author.first_name !== undefined) {
+      fields.push("first_name = ?");
+      values.push(author.first_name);
+    }
+    if (author.last_name !== undefined) {
+      fields.push("last_name = ?");
+      values.push(author.last_name);
+    }
+    if (author.email !== undefined) {
+      fields.push("email = ?");
+      values.push(author.email);
+    }
+    if (author.company !== undefined) {
+      fields.push("company = ?");
+      values.push(author.company);
+    }
+    if (author.job_title !== undefined) {
+      fields.push("job_title = ?");
+      values.push(author.job_title);
+    }
+    if (author.bio !== undefined) {
+      fields.push("bio = ?");
+      values.push(author.bio);
+    }
+    if (author.follower_count !== undefined) {
+      fields.push("follower_count = ?");
+      values.push(author.follower_count);
+    }
+    if (author.verified !== undefined) {
+      fields.push("verified = ?");
+      values.push(author.verified ? 1 : 0);
+    }
+
+    if (fields.length === 0) {
+      return false;
+    }
+
+    const query = `UPDATE authors SET ${fields.join(", ")} WHERE id = ?`;
+    values.push(id);
+
+    const stmt = db.prepare(query);
+    const result = stmt.run(...values);
+
+    return result.changes > 0;
   }
 }

@@ -64,18 +64,12 @@ The server will start on `http://localhost:3000`
     - `sortBy` (date | likes | comments | shares | engagement_rate)
     - `order` (ASC | DESC, default: DESC)
     - `category` (filter by category)
-    - `authorId` (filter by author)
-    - `tag` (filter by tag name)
     - `search` (search in post text and author name)
-    - `dateFrom` (filter by date range start)
-    - `dateTo` (filter by date range end)
-    - `minLikes` (minimum likes filter)
-    - `minEngagement` (minimum engagement rate filter)
-
-- `GET /api/posts/:id` - Get single post with author and tags
+    - `dateFrom` (YYYY-MM-DD format, filter by date range start)
+    - `dateTo` (YYYY-MM-DD format, filter by date range end)
 
 - `POST /api/posts` - Create new post
-  - Body: `{ author_id, text, date, likes?, comments?, shares?, image_svg?, category, location, engagement_rate?, tags? }`
+  - Body: `{ author_id, text, date, likes?, comments?, shares?, image_svg?, category, location?, engagement_rate?, tags? }`
 
 - `PUT /api/posts/:id` - Update post
   - Body: `{ text?, category?, date?, likes?, comments?, shares?, image_svg?, location?, engagement_rate?, tags? }`
@@ -85,18 +79,21 @@ The server will start on `http://localhost:3000`
 
 ### Authors
 
-- `GET /api/authors` - List all authors
-- `GET /api/authors/:id` - Get single author
+- `POST /api/authors` - Create new author
+  - Body: `{ first_name, last_name, email, company?, job_title?, bio?, follower_count?, verified? }`
+
+- `PUT /api/authors/:id` - Update author
+  - Body: `{ first_name?, last_name?, email?, company?, job_title?, bio? }`
+  - All fields optional - only updates provided fields
 
 ### Tags
 
-- `GET /api/tags` - List all tags
-  - Query params: `withCounts=true` to include post counts
+- `GET /api/tags` - List all tags (alphabetically sorted)
 
 ### Statistics
 
 - `GET /api/stats` - Get dashboard statistics
-  - Returns: total counts, engagement metrics, top authors, top tags, posts by category
+  - Returns: `totalPosts`, `totalLikes`, `totalComments`, `avgEngagementRate`
 
 ## Database Schema
 

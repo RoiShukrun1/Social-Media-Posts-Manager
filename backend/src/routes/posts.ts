@@ -16,16 +16,9 @@ router.get("/", (req: Request, res: Response) => {
     const filters: any = {};
 
     if (req.query.category) filters.category = req.query.category;
-    if (req.query.authorId)
-      filters.authorId = parseInt(req.query.authorId as string);
-    if (req.query.tag) filters.tagName = req.query.tag;
     if (req.query.search) filters.search = req.query.search;
     if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
     if (req.query.dateTo) filters.dateTo = req.query.dateTo;
-    if (req.query.minLikes)
-      filters.minLikes = parseInt(req.query.minLikes as string);
-    if (req.query.minEngagement)
-      filters.minEngagement = parseFloat(req.query.minEngagement as string);
 
     const sort: any = {
       field: [
@@ -60,31 +53,6 @@ router.get("/", (req: Request, res: Response) => {
   }
 });
 
-// GET /api/posts/:id - Get single post
-router.get("/:id", (req: Request, res: Response) => {
-  try {
-    const id = parseInt(req.params.id);
-    const post = PostModel.getPostById(id);
-
-    if (!post) {
-      return res.status(404).json({
-        success: false,
-        error: "Post not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      data: post,
-    });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-});
-
 // POST /api/posts - Create new post
 const createPostSchema = z.object({
   author_id: z.number(),
@@ -93,9 +61,9 @@ const createPostSchema = z.object({
   likes: z.number().default(0),
   comments: z.number().default(0),
   shares: z.number().default(0),
-  image_svg: z.string().optional(),
+  image_svg: z.string().nullable().optional(),
   category: z.string(),
-  location: z.string(),
+  location: z.string().nullable().optional(),
   engagement_rate: z.number().default(0),
   tags: z.array(z.string()).default([]),
 });
@@ -108,9 +76,9 @@ const updatePostSchema = z.object({
   likes: z.number().optional(),
   comments: z.number().optional(),
   shares: z.number().optional(),
-  image_svg: z.string().optional(),
+  image_svg: z.string().nullable().optional(),
   category: z.string().optional(),
-  location: z.string().optional(),
+  location: z.string().nullable().optional(),
   engagement_rate: z.number().optional(),
   tags: z.array(z.string()).optional(),
 });
@@ -120,7 +88,14 @@ router.post("/", (req: Request, res: Response) => {
     const validatedData = createPostSchema.parse(req.body);
     const { tags, ...postData } = validatedData;
 
-    const postId = PostModel.createPost(postData, tags);
+    // Convert undefined to null for optional fields
+    const cleanedPostData = {
+      ...postData,
+      image_svg: postData.image_svg ?? null,
+      location: postData.location ?? null,
+    };
+
+    const postId = PostModel.createPost(cleanedPostData, tags);
     const newPost = PostModel.getPostById(postId);
 
     res.status(201).json({
@@ -160,7 +135,22 @@ router.put("/:id", (req: Request, res: Response) => {
     const validatedData = updatePostSchema.parse(req.body);
     const { tags, ...postData } = validatedData;
 
-    const updated = PostModel.updatePost(id, postData, tags);
+    // Convert undefined to null for optional fields
+    const cleanedPostData: any = { ...postData };
+    if (
+      "image_svg" in cleanedPostData &&
+      cleanedPostData.image_svg === undefined
+    ) {
+      cleanedPostData.image_svg = null;
+    }
+    if (
+      "location" in cleanedPostData &&
+      cleanedPostData.location === undefined
+    ) {
+      cleanedPostData.location = null;
+    }
+
+    const updated = PostModel.updatePost(id, cleanedPostData, tags);
 
     if (!updated && tags === undefined) {
       return res.status(400).json({
