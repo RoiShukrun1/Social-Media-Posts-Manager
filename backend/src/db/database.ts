@@ -15,4 +15,18 @@ export const db = new Database(dbPath);
 // Enable foreign keys
 db.pragma("foreign_keys = ON");
 
+// Graceful shutdown handlers
+const shutdown = () => {
+  console.log("Closing database connection...");
+  db.close();
+  console.log("Database connection closed.");
+  process.exit(0);
+};
+
+// Handle Ctrl+C
+process.on("SIGINT", shutdown);
+
+// Handle process termination
+process.on("SIGTERM", shutdown);
+
 export default db;

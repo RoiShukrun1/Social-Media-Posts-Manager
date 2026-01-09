@@ -13,9 +13,11 @@ A full-stack application for managing social media posts with data cleaning, RES
 - **🔍 Advanced Search**: Search by text, author, category, tags, date range
 - **📊 Real-time Stats**: Dashboard with engagement metrics
 - **✨ Full CRUD**: Create, Read, Update, Delete operations
+- **🖼️ Image Upload**: Drag-and-drop image uploader with preview (max 5MB)
 - **🎨 Beautiful UI**: Modern design with Tailwind CSS
 - **⚡ Fast & Responsive**: Optimized performance with React Query
 - **🎯 Type-Safe**: Full TypeScript implementation
+- **🏗️ Clean Architecture**: Custom hooks for separation of concerns
 
 ## 📸 Screenshots
 
@@ -202,8 +204,16 @@ social-media-posts-manager/
 │   │   ├── App.tsx              # Main app
 │   │   ├── main.tsx             # Entry point
 │   │   ├── components/          # React components
+│   │   │   ├── forms/          # Form components (5 files)
+│   │   │   ├── modals/         # Modal components (3 files)
+│   │   │   └── ui/             # UI components (6 files)
 │   │   ├── constants/           # App constants (2 files)
-│   │   ├── hooks/               # Custom hooks (2 files)
+│   │   ├── hooks/               # Custom hooks (5 files)
+│   │   │   ├── usePostManagement.ts # CRUD operations
+│   │   │   ├── useFilters.ts        # Filter state management
+│   │   │   ├── useModals.ts         # Modal state management
+│   │   │   ├── useBodyScrollLock.ts # Scroll locking
+│   │   │   └── useEscapeKey.ts      # ESC key handler
 │   │   ├── types/               # TypeScript types (3 files)
 │   │   └── utils/               # Utility functions
 │   ├── tailwind.config.js       # Tailwind config
@@ -334,6 +344,7 @@ curl "http://localhost:3000/api/posts?limit=5"
 - [x] Sorting and pagination
 - [x] Validation with Zod
 - [x] Error handling
+- [x] Graceful database shutdown (SIGINT/SIGTERM)
 
 ### Phase 3: Frontend ✅
 
@@ -342,6 +353,8 @@ curl "http://localhost:3000/api/posts?limit=5"
 - [x] Post listing with filters
 - [x] Search functionality
 - [x] Create/Edit/Delete modals
+- [x] Image uploader with drag-and-drop
+- [x] Custom hooks architecture (usePostManagement, useFilters, useModals)
 - [x] Pagination
 - [x] Loading states
 - [x] Empty states

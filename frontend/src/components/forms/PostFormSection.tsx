@@ -8,6 +8,7 @@
 import { CATEGORIES } from "../../constants/categories";
 import { COLORS } from "../../constants/config";
 import { CreatePostData } from "../../types";
+import ImageUploader from "./ImageUploader";
 
 interface PostFormSectionProps {
   formData: CreatePostData;
@@ -178,23 +179,14 @@ export default function PostFormSection({
         </div>
       </div>
 
-      {/* Image SVG */}
+      {/* Image Upload */}
       <div>
-        <label
-          htmlFor="image_svg"
-          className="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          Image SVG (Optional)
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Post Image (Optional)
         </label>
-        <textarea
-          id="image_svg"
-          value={formData.image_svg || ""}
-          onChange={(e) =>
-            onFormDataChange({ image_svg: e.target.value || null })
-          }
-          rows={3}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent font-mono text-xs"
-          placeholder="<svg>...</svg>"
+        <ImageUploader
+          value={formData.image_svg || null}
+          onChange={(value) => onFormDataChange({ image_svg: value })}
         />
       </div>
     </>

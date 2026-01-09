@@ -178,6 +178,7 @@ backend/
 ## Key Features
 
 - **Auto-initialization**: Database schema created automatically on server startup
+- **Graceful Shutdown**: Properly closes database connections on SIGINT/SIGTERM signals
 - **SQL Injection Protection**: Safe parameterized queries with whitelisted sort fields
 - **Zod Validation**: Type-safe request validation for all endpoints
 - **N+1 Query Optimization**: Batch tag fetching for optimal performance

@@ -1,6 +1,6 @@
 /**
  * PostViewModal
- * 
+ *
  * Read-only modal component for viewing full post details.
  * Displays post content, author information, and engagement statistics.
  */
@@ -24,8 +24,14 @@ export default function PostViewModal({ post, onClose }: PostViewModalProps) {
   // Memoize expensive formatting operations
   const formattedDate = useMemo(() => formatDate(post.date), [post.date]);
   const formattedLikes = useMemo(() => formatNumber(post.likes), [post.likes]);
-  const formattedComments = useMemo(() => formatNumber(post.comments), [post.comments]);
-  const formattedShares = useMemo(() => formatNumber(post.shares), [post.shares]);
+  const formattedComments = useMemo(
+    () => formatNumber(post.comments),
+    [post.comments]
+  );
+  const formattedShares = useMemo(
+    () => formatNumber(post.shares),
+    [post.shares]
+  );
 
   return (
     <div
@@ -41,10 +47,19 @@ export default function PostViewModal({ post, onClose }: PostViewModalProps) {
       >
         {/* Image */}
         {post.image_svg ? (
-          <div
-            className="w-full h-80 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden bg-gray-50 [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
-            dangerouslySetInnerHTML={{ __html: post.image_svg }}
-          />
+          // Check if it's a base64 image or SVG markup
+          post.image_svg.startsWith("data:") ? (
+            <img
+              src={post.image_svg}
+              alt="Post"
+              className="w-full h-80 object-cover"
+            />
+          ) : (
+            <div
+              className="w-full h-80 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden bg-gray-50 [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
+              dangerouslySetInnerHTML={{ __html: post.image_svg }}
+            />
+          )
         ) : (
           <div className="w-full h-80 bg-gradient-to-br from-blue-400 via-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-semibold">
             {post.category}
@@ -122,9 +137,7 @@ export default function PostViewModal({ post, onClose }: PostViewModalProps) {
             </div>
             <div className="flex items-center gap-2 text-gray-600">
               <span className="text-xl">💬</span>
-              <span className="font-semibold">
-                {formattedComments}
-              </span>
+              <span className="font-semibold">{formattedComments}</span>
               <span className="text-sm text-gray-500">Comments</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">

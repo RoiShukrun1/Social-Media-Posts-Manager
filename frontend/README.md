@@ -10,6 +10,7 @@ React + TypeScript + Tailwind CSS frontend for managing social media posts.
 - 🔤 Category filtering (case-insensitive)
 - 📈 Sort by multiple metrics
 - ➕ Create new posts with inline validation
+- 🖼️ Image uploader with drag-and-drop and preview (max 5MB)
 - 👤 Create authors dynamically (free text fields)
 - ✏️ Edit existing posts and author details
 - 🗑️ Delete posts with confirmation
@@ -19,6 +20,7 @@ React + TypeScript + Tailwind CSS frontend for managing social media posts.
 - 📱 Fully responsive design (mobile/tablet/desktop)
 - ⚡ Fast and optimized with React Query
 - 🎨 System fonts (no Google Fonts)
+- 🏗️ Clean architecture with custom hooks
 
 ## Tech Stack
 
@@ -87,11 +89,12 @@ src/
 ├── index.css                 # Global styles
 ├── components/               # React components
 │   ├── Filters.tsx          # Filter controls
-│   ├── forms/               # Form components (4 files)
+│   ├── forms/               # Form components (5 files)
 │   │   ├── AuthorFormSection.tsx
 │   │   ├── PostFormSection.tsx
 │   │   ├── PostModalActions.tsx
-│   │   └── TagSelection.tsx
+│   │   ├── TagSelection.tsx
+│   │   └── ImageUploader.tsx
 │   ├── modals/              # Modal components (3 files)
 │   │   ├── PostModal.tsx    # Create/edit post modal
 │   │   ├── PostViewModal.tsx # Expanded post view
@@ -106,7 +109,10 @@ src/
 ├── constants/               # App constants
 │   ├── categories.ts        # Post categories
 │   └── config.ts            # Configuration values
-├── hooks/                   # Custom React hooks
+├── hooks/                   # Custom React hooks (5 files)
+│   ├── usePostManagement.ts # CRUD operations hook
+│   ├── useFilters.ts        # Filter state management
+│   ├── useModals.ts         # Modal state management
 │   ├── useBodyScrollLock.ts # Scroll locking for modals
 │   └── useEscapeKey.ts      # ESC key handler
 ├── types/                   # TypeScript types
@@ -150,16 +156,19 @@ All API calls are in `src/api.ts` with proper error handling:
 ### Endpoints Used
 
 **Posts**:
+
 - `GET /api/posts` - List posts with filters (search, category, dateFrom, dateTo, sortBy, order, page, limit)
 - `POST /api/posts` - Create new post with Zod validation
 - `PUT /api/posts/:id` - Update existing post
 - `DELETE /api/posts/:id` - Delete post
 
 **Authors**:
+
 - `POST /api/authors` - Create new author with Zod validation
 - `PUT /api/authors/:id` - Update author with Zod validation
 
 **Tags & Stats**:
+
 - `GET /api/tags` - List all tags (sorted alphabetically)
 - `GET /api/stats` - Dashboard statistics (totalPosts, totalLikes, totalComments, avgEngagementRate)
 

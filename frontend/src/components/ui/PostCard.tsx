@@ -44,10 +44,19 @@ export default function PostCard({
     >
       {/* Image */}
       {post.image_svg ? (
-        <div
-          className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
-          dangerouslySetInnerHTML={{ __html: post.image_svg }}
-        />
+        // Check if it's a base64 image or SVG markup
+        post.image_svg.startsWith("data:") ? (
+          <img
+            src={post.image_svg}
+            alt="Post"
+            className="w-full h-64 object-cover"
+          />
+        ) : (
+          <div
+            className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
+            dangerouslySetInnerHTML={{ __html: post.image_svg }}
+          />
+        )
       ) : (
         <div className="w-full h-64 bg-gradient-to-br from-blue-400 via-blue-500 to-purple-600 flex items-center justify-center text-white text-2xl font-semibold">
           {post.category}
