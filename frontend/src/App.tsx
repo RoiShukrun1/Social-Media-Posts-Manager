@@ -9,7 +9,8 @@ import {
 import { getPosts, createPost, updatePost, deletePost } from "./services/api";
 import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
 import { getErrorMessage } from "./types/errors";
-import "./types/events"; // Import to register custom events
+import { DEFAULTS } from "./constants/config";
+import "./types/events";
 
 import StatsHeader from "./components/StatsHeader";
 import Filters from "./components/Filters";
@@ -36,7 +37,7 @@ function PostsManager() {
   const [filters, setFilters] = useState<PostFilters>({
     order: "DESC",
     page: 1,
-    limit: 20,
+    limit: DEFAULTS.pageSize,
   });
 
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);

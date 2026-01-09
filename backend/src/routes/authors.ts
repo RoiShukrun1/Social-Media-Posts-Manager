@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { AuthorModel } from "../models/authorModel";
 import { getErrorMessage } from "../utils/errorHandler";
+import { HTTP_STATUS } from "../constants/config";
 
 const router = Router();
 
@@ -20,7 +21,7 @@ router.post("/", (req: Request, res: Response) => {
 
     // Validate required fields
     if (!first_name || !last_name || !email) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "first_name, last_name, and email are required",
       });
@@ -29,7 +30,7 @@ router.post("/", (req: Request, res: Response) => {
     // Check if author with email already exists
     const existingAuthor = AuthorModel.getAuthorByEmail(email);
     if (existingAuthor) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "Author with this email already exists",
       });
@@ -48,12 +49,12 @@ router.post("/", (req: Request, res: Response) => {
 
     const newAuthor = AuthorModel.getAuthorById(authorId);
 
-    res.status(201).json({
+    res.status(HTTP_STATUS.CREATED).json({
       success: true,
       data: newAuthor,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });
@@ -68,7 +69,7 @@ router.put("/:id", (req: Request, res: Response) => {
     // Check if author exists
     const existingAuthor = AuthorModel.getAuthorById(id);
     if (!existingAuthor) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: "Author not found",
       });
@@ -89,7 +90,7 @@ router.put("/:id", (req: Request, res: Response) => {
     if (email && email !== existingAuthor.email) {
       const authorWithEmail = AuthorModel.getAuthorByEmail(email);
       if (authorWithEmail && authorWithEmail.id !== id) {
-        return res.status(400).json({
+        return res.status(HTTP_STATUS.BAD_REQUEST).json({
           success: false,
           error: "Another author with this email already exists",
         });
@@ -120,7 +121,7 @@ router.put("/:id", (req: Request, res: Response) => {
     const updated = AuthorModel.updateAuthor(id, updateData);
 
     if (!updated) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "No valid fields to update",
       });
@@ -134,7 +135,7 @@ router.put("/:id", (req: Request, res: Response) => {
       message: "Author updated successfully",
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });

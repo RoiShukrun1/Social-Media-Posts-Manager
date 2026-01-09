@@ -1,6 +1,7 @@
 import { Router, Request, Response } from "express";
 import { TagModel } from "../models/tagModel";
 import { getErrorMessage } from "../utils/errorHandler";
+import { HTTP_STATUS } from "../constants/config";
 
 const router = Router();
 
@@ -14,7 +15,7 @@ router.get("/", (req: Request, res: Response) => {
       data: tags,
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });

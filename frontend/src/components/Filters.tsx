@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { PostFilters } from "../types";
 import { CATEGORIES } from "../constants/categories";
+import { COLORS, DEFAULTS } from "../constants/config";
 
 interface FiltersProps {
   filters: PostFilters;
@@ -47,7 +48,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
         search: localSearch || undefined,
         page: 1,
       });
-    }, 500);
+    }, DEFAULTS.debounceMs);
 
     return () => clearTimeout(timer);
   }, [localSearch]);
@@ -171,7 +172,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
     onFiltersChange({
       order: "DESC",
       page: 1,
-      limit: 20,
+      limit: DEFAULTS.pageSize,
     });
   };
 
@@ -333,7 +334,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={handleApplyFilters}
-          className="px-6 py-2 bg-[#4299E1] text-white rounded-lg font-semibold hover:bg-[#3182CE] transition-colors"
+          className={`px-6 py-2 bg-[${COLORS.primary}] text-white rounded-lg font-semibold hover:bg-[${COLORS.primaryHover}] transition-colors`}
         >
           Apply Filters
         </button>

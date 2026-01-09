@@ -4,6 +4,7 @@ import { parse } from "csv-parse/sync";
 import db from "../db/database";
 import type { CSVRow, Author, Tag } from "../types";
 import { hasErrorCode } from "../utils/errorHandler";
+import { SQLITE_ERRORS } from "../constants/config";
 
 export async function importDataFromCSV() {
   const csvPath = path.join(
@@ -108,7 +109,7 @@ export async function importDataFromCSV() {
                 // Tag might already exist due to unique constraint
                 if (
                   hasErrorCode(err) &&
-                  err.code === "SQLITE_CONSTRAINT_UNIQUE"
+                  err.code === SQLITE_ERRORS.CONSTRAINT_UNIQUE
                 ) {
                   const existingTag = db
                     .prepare("SELECT id FROM tags WHERE name = ?")
@@ -129,7 +130,7 @@ export async function importDataFromCSV() {
               // Ignore duplicate post-tag relationships
               if (
                 !hasErrorCode(err) ||
-                err.code !== "SQLITE_CONSTRAINT_PRIMARYKEY"
+                err.code !== SQLITE_ERRORS.CONSTRAINT_PRIMARYKEY
               ) {
                 throw err;
               }

@@ -1,4 +1,5 @@
 import { PaginationMeta } from "../types";
+import { COLORS, DEFAULTS } from "../constants/config";
 
 interface PaginationProps {
   pagination: PaginationMeta;
@@ -13,7 +14,7 @@ export default function Pagination({
 
   const getPageNumbers = () => {
     const pages: number[] = [];
-    const maxVisible = 5;
+    const maxVisible = DEFAULTS.paginationVisible;
 
     if (totalPages <= maxVisible) {
       // Show all pages if total is 5 or less
@@ -63,7 +64,7 @@ export default function Pagination({
             aria-current={page === pageNum ? "page" : undefined}
             className={`w-[42px] h-[34px] rounded-[8px] font-semibold text-[14px] leading-none flex items-center justify-end pr-2 transition-colors ${
               page === pageNum
-                ? "bg-[#4299E1] text-white"
+                ? `bg-[${COLORS.primary}] text-white`
                 : "bg-[#FFFFFF] text-gray-700 hover:bg-gray-50"
             }`}
           >

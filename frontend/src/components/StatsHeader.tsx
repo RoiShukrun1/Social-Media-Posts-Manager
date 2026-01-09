@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { getStats } from "../services/api";
 import { formatNumberCompact } from "../utils/formatters";
+import { COLORS } from "../constants/config";
 
 export default function StatsHeader() {
   const { data: stats, isLoading } = useQuery({
@@ -48,7 +49,7 @@ export default function StatsHeader() {
             window.dispatchEvent(new CustomEvent("openAddPostModal"))
           }
           aria-label="Add new post"
-          className="px-6 py-3 bg-[#48BB78] text-white rounded-lg font-semibold hover:bg-[#38A169] transition-colors shadow-sm flex items-center gap-2"
+          className={`px-6 py-3 bg-[${COLORS.success}] text-white rounded-lg font-semibold hover:bg-[${COLORS.successHover}] transition-colors shadow-sm flex items-center gap-2`}
         >
           <span className="text-lg" aria-hidden="true">
             ➕

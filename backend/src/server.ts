@@ -4,6 +4,7 @@ import postsRouter from "./routes/posts";
 import authorsRouter from "./routes/authors";
 import tagsRouter from "./routes/tags";
 import statsRouter from "./routes/stats";
+import { HTTP_STATUS } from "./constants/config";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -31,7 +32,7 @@ app.use("/api/stats", statsRouter);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
-  res.status(404).json({
+  res.status(HTTP_STATUS.NOT_FOUND).json({
     success: false,
     error: "Route not found",
   });
@@ -40,7 +41,7 @@ app.use((req: Request, res: Response) => {
 // Error handler
 app.use((err: Error, req: Request, res: Response, _next: unknown) => {
   console.error("Error:", err);
-  res.status(500).json({
+  res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
     success: false,
     error: "Internal server error",
   });

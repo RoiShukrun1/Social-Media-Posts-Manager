@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getTags, createAuthor, updateAuthor } from "../services/api";
 import { Post, CreatePostData, UpdatePostData } from "../types";
 import { CATEGORIES } from "../constants/categories";
+import { COLORS, DEFAULTS } from "../constants/config";
 import { useEscapeKey } from "../hooks/useEscapeKey";
 
 interface PostModalProps {
@@ -63,7 +64,7 @@ export default function PostModal({
   // Focus first input when modal opens
   useEffect(() => {
     if (isOpen && firstInputRef.current) {
-      setTimeout(() => firstInputRef.current?.focus(), 100);
+      setTimeout(() => firstInputRef.current?.focus(), DEFAULTS.focusDelayMs);
     }
   }, [isOpen]);
 
@@ -177,11 +178,13 @@ export default function PostModal({
     // Calculate engagement rate if not set
     // Formula: Standard social media engagement rate
     // engagement_rate = (total_engagements / follower_count) × 100
-    // Using 10,000 as default follower count for new authors
     const totalEngagement = (formData.likes || 0) + (formData.comments || 0);
     const engagementRate =
       formData.engagement_rate ||
-      (totalEngagement > 0 ? (totalEngagement / 10000) * 100 : 0);
+      (totalEngagement > 0
+        ? (totalEngagement / DEFAULTS.followerCount) *
+          DEFAULTS.percentageMultiplier
+        : 0);
 
     let authorId = formData.author_id;
 
@@ -201,7 +204,7 @@ export default function PostModal({
           company: authorData.company,
           job_title: authorData.job_title,
           bio: authorData.bio,
-          follower_count: 10000,
+          follower_count: DEFAULTS.followerCount,
           verified: false,
         });
         authorId = newAuthor.id;
@@ -321,7 +324,9 @@ export default function PostModal({
                   }}
                   placeholder="First Name"
                   className={`w-full px-4 py-2 border ${
-                    errors.first_name ? "border-red-500" : "border-gray-300"
+                    errors.first_name
+                      ? `border-[${COLORS.errorBorder}]`
+                      : `border-[${COLORS.gray[300]}]`
                   } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                 />
                 {errors.first_name && (
@@ -353,7 +358,9 @@ export default function PostModal({
                   }}
                   placeholder="Last Name"
                   className={`w-full px-4 py-2 border ${
-                    errors.last_name ? "border-red-500" : "border-gray-300"
+                    errors.last_name
+                      ? `border-[${COLORS.errorBorder}]`
+                      : `border-[${COLORS.gray[300]}]`
                   } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                 />
                 {errors.last_name && (
@@ -386,7 +393,9 @@ export default function PostModal({
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? "email-error" : undefined}
                 className={`w-full px-4 py-2 border ${
-                  errors.email ? "border-red-500" : "border-gray-300"
+                  errors.email
+                    ? `border-[${COLORS.errorBorder}]`
+                    : `border-[${COLORS.gray[300]}]`
                 } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
               />
               {errors.email && (
@@ -458,7 +467,9 @@ export default function PostModal({
               }}
               rows={4}
               className={`w-full px-4 py-2 border ${
-                errors.text ? "border-red-500" : "border-gray-300"
+                errors.text
+                  ? `border-[${COLORS.errorBorder}]`
+                  : `border-[${COLORS.gray[300]}]`
               } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
               placeholder="What's on your mind?"
             />
@@ -618,7 +629,7 @@ export default function PostModal({
                   }}
                   className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${
                     formData.tags.includes(tag.name)
-                      ? "bg-[#4299E1] text-white"
+                      ? `bg-[${COLORS.primary}] text-white`
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
@@ -660,7 +671,7 @@ export default function PostModal({
             <button
               type="submit"
               disabled={isLoading || !isFormValid()}
-              className="px-6 py-2 bg-[#48BB78] text-white rounded-lg font-semibold transition-all duration-200 hover:bg-[#38A169] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[#48BB78]"
+              className={`px-6 py-2 bg-[${COLORS.success}] text-white rounded-lg font-semibold transition-all duration-200 hover:bg-[${COLORS.successHover}] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[${COLORS.success}]`}
             >
               {isLoading ? "Saving..." : post ? "Save Changes" : "Create Post"}
             </button>

@@ -6,14 +6,15 @@ import {
   hasErrorName,
   hasErrorDetails,
 } from "../utils/errorHandler";
+import { HTTP_STATUS, DEFAULTS } from "../constants/config";
 
 const router = Router();
 
 // GET /api/posts - List posts with filtering, sorting, and pagination
 router.get("/", (req: Request, res: Response) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
-    const limit = parseInt(req.query.limit as string) || 20;
+    const page = parseInt(req.query.page as string) || DEFAULTS.defaultPage;
+    const limit = parseInt(req.query.limit as string) || DEFAULTS.pageSize;
     const sortField = (req.query.sortBy as string) || "date";
     const sortOrder =
       (req.query.order as string)?.toUpperCase() === "ASC" ? "ASC" : "DESC";
@@ -63,7 +64,7 @@ router.get("/", (req: Request, res: Response) => {
       },
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });
@@ -115,20 +116,20 @@ router.post("/", (req: Request, res: Response) => {
     const postId = PostModel.createPost(cleanedPostData, tags);
     const newPost = PostModel.getPostById(postId);
 
-    res.status(201).json({
+    res.status(HTTP_STATUS.CREATED).json({
       success: true,
       data: newPost,
     });
   } catch (error) {
     if (hasErrorName(error) && error.name === "ZodError") {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "Validation error",
         details: hasErrorDetails(error) ? error.errors : undefined,
       });
     }
 
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });
@@ -143,7 +144,7 @@ router.put("/:id", (req: Request, res: Response) => {
     // Check if post exists
     const existingPost = PostModel.getPostById(id);
     if (!existingPost) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: "Post not found",
       });
@@ -174,7 +175,7 @@ router.put("/:id", (req: Request, res: Response) => {
     const updated = PostModel.updatePost(id, cleanedPostData, tags);
 
     if (!updated && tags === undefined) {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "No valid fields to update",
       });
@@ -189,14 +190,14 @@ router.put("/:id", (req: Request, res: Response) => {
     });
   } catch (error) {
     if (hasErrorName(error) && error.name === "ZodError") {
-      return res.status(400).json({
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         error: "Validation error",
         details: hasErrorDetails(error) ? error.errors : undefined,
       });
     }
 
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });
@@ -210,7 +211,7 @@ router.delete("/:id", (req: Request, res: Response) => {
     const deleted = PostModel.deletePost(id);
 
     if (!deleted) {
-      return res.status(404).json({
+      return res.status(HTTP_STATUS.NOT_FOUND).json({
         success: false,
         error: "Post not found",
       });
@@ -221,7 +222,7 @@ router.delete("/:id", (req: Request, res: Response) => {
       message: "Post deleted successfully",
     });
   } catch (error) {
-    res.status(500).json({
+    res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
       success: false,
       error: getErrorMessage(error),
     });
