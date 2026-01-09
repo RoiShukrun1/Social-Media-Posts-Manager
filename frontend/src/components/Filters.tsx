@@ -334,7 +334,10 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={handleApplyFilters}
-          className={`px-6 py-2 bg-[${COLORS.primary}] text-white rounded-lg font-semibold hover:bg-[${COLORS.primaryHover}] transition-colors`}
+          style={{ backgroundColor: COLORS.primary }}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = COLORS.primaryHover)}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.primary)}
+          className="px-6 py-2 text-white rounded-lg font-semibold transition-colors"
         >
           Apply Filters
         </button>

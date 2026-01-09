@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   QueryClient,
   QueryClientProvider,
@@ -10,7 +10,6 @@ import { getPosts, createPost, updatePost, deletePost } from "./services/api";
 import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
 import { getErrorMessage } from "./types/errors";
 import { DEFAULTS } from "./constants/config";
-import "./types/events";
 
 import StatsHeader from "./components/StatsHeader";
 import Filters from "./components/Filters";
@@ -44,14 +43,6 @@ function PostsManager() {
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [deletingPost, setDeletingPost] = useState<Post | null>(null);
   const [viewingPost, setViewingPost] = useState<Post | null>(null);
-
-  // Listen for add post button click from header
-  useEffect(() => {
-    const handleOpenModal = () => setIsCreateModalOpen(true);
-    window.addEventListener("openAddPostModal", handleOpenModal);
-    return () =>
-      window.removeEventListener("openAddPostModal", handleOpenModal);
-  }, []);
 
   // Fetch posts
   const { data, isLoading, error } = useQuery({
@@ -164,7 +155,7 @@ function PostsManager() {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-6 pb-12">
         {/* Stats Header */}
-        <StatsHeader />
+        <StatsHeader onAddPostClick={() => setIsCreateModalOpen(true)} />
 
         {/* Filters */}
         <Filters filters={filters} onFiltersChange={handleFilterChange} />

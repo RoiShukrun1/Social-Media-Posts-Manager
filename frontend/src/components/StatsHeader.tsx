@@ -3,7 +3,11 @@ import { getStats } from "../services/api";
 import { formatNumberCompact } from "../utils/formatters";
 import { COLORS } from "../constants/config";
 
-export default function StatsHeader() {
+interface StatsHeaderProps {
+  onAddPostClick: () => void;
+}
+
+export default function StatsHeader({ onAddPostClick }: StatsHeaderProps) {
   const { data: stats, isLoading } = useQuery({
     queryKey: ["stats"],
     queryFn: getStats,
@@ -45,11 +49,16 @@ export default function StatsHeader() {
           </p>
         </div>
         <button
-          onClick={() =>
-            window.dispatchEvent(new CustomEvent("openAddPostModal"))
-          }
+          onClick={onAddPostClick}
           aria-label="Add new post"
-          className={`px-6 py-3 bg-[${COLORS.success}] text-white rounded-lg font-semibold hover:bg-[${COLORS.successHover}] transition-colors shadow-sm flex items-center gap-2`}
+          style={{ backgroundColor: COLORS.success }}
+          onMouseEnter={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.successHover)
+          }
+          onMouseLeave={(e) =>
+            (e.currentTarget.style.backgroundColor = COLORS.success)
+          }
+          className="px-6 py-3 text-white rounded-lg font-semibold transition-colors shadow-sm flex items-center gap-2"
         >
           <span className="text-lg" aria-hidden="true">
             ➕

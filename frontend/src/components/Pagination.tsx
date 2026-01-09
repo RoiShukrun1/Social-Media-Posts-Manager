@@ -62,9 +62,12 @@ export default function Pagination({
             onClick={() => onPageChange(pageNum)}
             aria-label={`Go to page ${pageNum}`}
             aria-current={page === pageNum ? "page" : undefined}
+            style={
+              page === pageNum ? { backgroundColor: COLORS.primary } : undefined
+            }
             className={`w-[42px] h-[34px] rounded-[8px] font-semibold text-[14px] leading-none flex items-center justify-end pr-2 transition-colors ${
               page === pageNum
-                ? `bg-[${COLORS.primary}] text-white`
+                ? "text-white"
                 : "bg-[#FFFFFF] text-gray-700 hover:bg-gray-50"
             }`}
           >

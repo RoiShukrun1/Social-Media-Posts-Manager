@@ -323,11 +323,8 @@ export default function PostModal({
                     }
                   }}
                   placeholder="First Name"
-                  className={`w-full px-4 py-2 border ${
-                    errors.first_name
-                      ? `border-[${COLORS.errorBorder}]`
-                      : `border-[${COLORS.gray[300]}]`
-                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+                  style={{ borderColor: errors.first_name ? COLORS.errorBorder : COLORS.gray[300] }}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
                 {errors.first_name && (
                   <p
@@ -357,11 +354,8 @@ export default function PostModal({
                     }
                   }}
                   placeholder="Last Name"
-                  className={`w-full px-4 py-2 border ${
-                    errors.last_name
-                      ? `border-[${COLORS.errorBorder}]`
-                      : `border-[${COLORS.gray[300]}]`
-                  } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+                  style={{ borderColor: errors.last_name ? COLORS.errorBorder : COLORS.gray[300] }}
+                  className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
                 {errors.last_name && (
                   <p className="text-xs text-red-600 mt-1">
@@ -371,7 +365,7 @@ export default function PostModal({
               </div>
             </div>
             <div>
-              <input
+                <input
                 type="email"
                 value={authorData.email}
                 onChange={(e) => {
@@ -392,11 +386,8 @@ export default function PostModal({
                 aria-required="true"
                 aria-invalid={!!errors.email}
                 aria-describedby={errors.email ? "email-error" : undefined}
-                className={`w-full px-4 py-2 border ${
-                  errors.email
-                    ? `border-[${COLORS.errorBorder}]`
-                    : `border-[${COLORS.gray[300]}]`
-                } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+                style={{ borderColor: errors.email ? COLORS.errorBorder : COLORS.gray[300] }}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               />
               {errors.email && (
                 <p
@@ -466,11 +457,8 @@ export default function PostModal({
                 }
               }}
               rows={4}
-              className={`w-full px-4 py-2 border ${
-                errors.text
-                  ? `border-[${COLORS.errorBorder}]`
-                  : `border-[${COLORS.gray[300]}]`
-              } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
+              style={{ borderColor: errors.text ? COLORS.errorBorder : COLORS.gray[300] }}
+              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
               placeholder="What's on your mind?"
             />
             {errors.text && (
@@ -627,9 +615,10 @@ export default function PostModal({
                     e.preventDefault();
                     handleTagToggle(tag.name);
                   }}
+                  style={formData.tags.includes(tag.name) ? { backgroundColor: COLORS.primary } : undefined}
                   className={`px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${
                     formData.tags.includes(tag.name)
-                      ? `bg-[${COLORS.primary}] text-white`
+                      ? "text-white"
                       : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                   }`}
                 >
@@ -671,7 +660,14 @@ export default function PostModal({
             <button
               type="submit"
               disabled={isLoading || !isFormValid()}
-              className={`px-6 py-2 bg-[${COLORS.success}] text-white rounded-lg font-semibold transition-all duration-200 hover:bg-[${COLORS.successHover}] focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-[${COLORS.success}]`}
+              style={{ backgroundColor: COLORS.success }}
+              onMouseEnter={(e) => {
+                if (!e.currentTarget.disabled) {
+                  e.currentTarget.style.backgroundColor = COLORS.successHover;
+                }
+              }}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = COLORS.success)}
+              className="px-6 py-2 text-white rounded-lg font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? "Saving..." : post ? "Save Changes" : "Create Post"}
             </button>
