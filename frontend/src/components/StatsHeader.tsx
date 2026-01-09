@@ -10,7 +10,12 @@ export default function StatsHeader() {
   if (isLoading) {
     return (
       <div className="pt-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+          role="status"
+          aria-live="polite"
+          aria-label="Loading statistics"
+        >
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
@@ -39,7 +44,7 @@ export default function StatsHeader() {
       {/* Header in white container */}
       <div className="bg-white rounded-xl p-6 mb-6 flex items-start justify-between">
         <div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2" id="page-title">
             Social Media Posts
           </h1>
           <p className="text-gray-600">
@@ -50,15 +55,22 @@ export default function StatsHeader() {
           onClick={() =>
             window.dispatchEvent(new CustomEvent("openAddPostModal"))
           }
+          aria-label="Add new post"
           className="px-6 py-3 bg-[#48BB78] text-white rounded-lg font-semibold hover:bg-[#38A169] transition-colors shadow-sm flex items-center gap-2"
         >
-          <span className="text-lg">➕</span>
+          <span className="text-lg" aria-hidden="true">
+            ➕
+          </span>
           Add New Post
         </button>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
+      <div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6"
+        role="region"
+        aria-label="Post statistics"
+      >
         <StatCard
           title="Total Posts"
           value={stats?.totalPosts ? stats.totalPosts.toLocaleString() : "0"}
@@ -86,9 +98,15 @@ export default function StatsHeader() {
 
 function StatCard({ title, value }: { title: string; value: string }) {
   return (
-    <div className="bg-white rounded-xl p-6">
+    <div
+      className="bg-white rounded-xl p-6"
+      role="group"
+      aria-label={`${title}: ${value}`}
+    >
       <p className="text-sm text-gray-600 mb-2">{title}</p>
-      <p className="text-3xl font-bold text-gray-900">{value}</p>
+      <p className="text-3xl font-bold text-gray-900" aria-live="polite">
+        {value}
+      </p>
     </div>
   );
 }

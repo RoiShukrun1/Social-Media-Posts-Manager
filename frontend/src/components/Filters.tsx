@@ -21,7 +21,16 @@ const CATEGORIES = [
   "Science",
 ];
 
-const SORT_OPTIONS = ["date", "likes", "comments", "shares", "engagement_rate"];
+const SORT_OPTIONS = ["date", "likes", "comments", "shares", "engagement rate"];
+
+// Mapping between display names and API values
+const SORT_DISPLAY_TO_API: Record<string, string> = {
+  date: "date",
+  likes: "likes",
+  comments: "comments",
+  shares: "shares",
+  "engagement rate": "engagement_rate",
+};
 
 interface ValidationErrors {
   category?: string;
@@ -99,18 +108,29 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const handleApplyFilters = () => {
     const newErrors: ValidationErrors = {};
 
-    // Validate category
-    if (localCategory && !CATEGORIES.includes(localCategory)) {
-      newErrors.category = `Invalid category. Valid options: ${CATEGORIES.join(
-        ", "
-      )}`;
+    // Validate category (case insensitive)
+    if (localCategory) {
+      const categoryMatch = CATEGORIES.find(
+        (cat) => cat.toLowerCase() === localCategory.toLowerCase()
+      );
+      if (!categoryMatch) {
+        newErrors.category = `Invalid category. Valid options: ${CATEGORIES.join(
+          ", "
+        )}`;
+      }
     }
 
-    // Validate sort
-    if (localSortBy && !SORT_OPTIONS.includes(localSortBy)) {
-      newErrors.sortBy = `Invalid sort option. Valid options: ${SORT_OPTIONS.join(
-        ", "
-      )}`;
+    // Validate sort (case insensitive, handle "engagement rate")
+    if (localSortBy) {
+      const sortLower = localSortBy.toLowerCase();
+      const validSort = Object.keys(SORT_DISPLAY_TO_API).some(
+        (key) => key.toLowerCase() === sortLower
+      );
+      if (!validSort) {
+        newErrors.sortBy = `Invalid sort option. Valid options: ${SORT_OPTIONS.join(
+          ", "
+        )}`;
+      }
     }
 
     // Validate dates
@@ -129,14 +149,33 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
       return;
     }
 
+    // Transform category to match exact case
+    const matchedCategory = localCategory
+      ? CATEGORIES.find(
+          (cat) => cat.toLowerCase() === localCategory.toLowerCase()
+        )
+      : undefined;
+
+    // Transform sortBy to API format (handle "engagement rate" -> "engagement_rate")
+    let apiSortBy: PostFilters["sortBy"] | undefined;
+    if (localSortBy) {
+      const sortLower = localSortBy.toLowerCase();
+      const matchedKey = Object.keys(SORT_DISPLAY_TO_API).find(
+        (key) => key.toLowerCase() === sortLower
+      );
+      if (matchedKey) {
+        apiSortBy = SORT_DISPLAY_TO_API[matchedKey] as PostFilters["sortBy"];
+      }
+    }
+
     // Apply filters
     onFiltersChange({
       ...filters,
       search: localSearch || undefined,
-      category: localCategory || undefined,
+      category: matchedCategory || undefined,
       dateFrom: localDateFrom ? convertToAPIFormat(localDateFrom) : undefined,
       dateTo: localDateTo ? convertToAPIFormat(localDateTo) : undefined,
-      sortBy: (localSortBy || "date") as PostFilters["sortBy"],
+      sortBy: apiSortBy,
       page: 1,
     });
   };
@@ -149,11 +188,17 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
     setLocalSortBy("");
     setErrors({});
     onFiltersChange({
-      sortBy: "date",
       order: "DESC",
       page: 1,
       limit: 20,
     });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleApplyFilters();
+    }
   };
 
   return (
@@ -172,6 +217,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
             type="text"
             value={localSearch}
             onChange={(e) => setLocalSearch(e.target.value)}
+            onKeyDown={handleKeyDown}
             placeholder="Search posts..."
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
@@ -195,6 +241,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
                 setErrors({ ...errors, category: undefined });
               }
             }}
+            onKeyDown={handleKeyDown}
             placeholder="e.g., Technology"
             className={`w-full px-4 py-2 border ${
               errors.category ? "border-red-500" : "border-gray-300"
@@ -225,6 +272,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
                 setErrors({ ...errors, dateFrom: undefined });
               }
             }}
+            onKeyDown={handleKeyDown}
             placeholder="dd/mm/yyyy"
             className={`w-full px-4 py-2 border ${
               errors.dateFrom ? "border-red-500" : "border-gray-300"
@@ -255,6 +303,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
                 setErrors({ ...errors, dateTo: undefined });
               }
             }}
+            onKeyDown={handleKeyDown}
             placeholder="dd/mm/yyyy"
             className={`w-full px-4 py-2 border ${
               errors.dateTo ? "border-red-500" : "border-gray-300"
@@ -285,6 +334,7 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
                 setErrors({ ...errors, sortBy: undefined });
               }
             }}
+            onKeyDown={handleKeyDown}
             placeholder="e.g., date"
             className={`w-full px-4 py-2 border ${
               errors.sortBy ? "border-red-500" : "border-gray-300"

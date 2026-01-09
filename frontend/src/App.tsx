@@ -15,6 +15,7 @@ import PostCard from "./components/PostCard";
 import Pagination from "./components/Pagination";
 import PostModal from "./components/PostModal";
 import DeleteModal from "./components/DeleteModal";
+import PostViewModal from "./components/PostViewModal";
 import LoadingSkeleton from "./components/LoadingSkeleton";
 import EmptyState from "./components/EmptyState";
 
@@ -31,7 +32,6 @@ function PostsManager() {
   const queryClient = useQueryClient();
 
   const [filters, setFilters] = useState<PostFilters>({
-    sortBy: "date",
     order: "DESC",
     page: 1,
     limit: 20,
@@ -40,6 +40,7 @@ function PostsManager() {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [editingPost, setEditingPost] = useState<Post | null>(null);
   const [deletingPost, setDeletingPost] = useState<Post | null>(null);
+  const [viewingPost, setViewingPost] = useState<Post | null>(null);
 
   // Listen for add post button click from header
   useEffect(() => {
@@ -63,14 +64,13 @@ function PostsManager() {
       setIsCreateModalOpen(false);
       // Then invalidate and refetch both posts and stats
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["posts"],
-          refetchType: "active",
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["stats"],
-          refetchType: "active",
-        }),
+        queryClient.invalidateQueries({ queryKey: ["posts"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]);
+      // Force immediate refetch
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["posts"] }),
+        queryClient.refetchQueries({ queryKey: ["stats"] }),
       ]);
     },
     onError: (error: any) => {
@@ -100,14 +100,13 @@ function PostsManager() {
       setEditingPost(null);
       // Then invalidate and refetch both posts and stats
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["posts"],
-          refetchType: "active",
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["stats"],
-          refetchType: "active",
-        }),
+        queryClient.invalidateQueries({ queryKey: ["posts"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]);
+      // Force immediate refetch
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["posts"] }),
+        queryClient.refetchQueries({ queryKey: ["stats"] }),
       ]);
     },
     onError: (error: any) => {
@@ -137,14 +136,13 @@ function PostsManager() {
       setDeletingPost(null);
       // Then invalidate and refetch both posts and stats
       await Promise.all([
-        queryClient.invalidateQueries({
-          queryKey: ["posts"],
-          refetchType: "active",
-        }),
-        queryClient.invalidateQueries({
-          queryKey: ["stats"],
-          refetchType: "active",
-        }),
+        queryClient.invalidateQueries({ queryKey: ["posts"] }),
+        queryClient.invalidateQueries({ queryKey: ["stats"] }),
+      ]);
+      // Force immediate refetch
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: ["posts"] }),
+        queryClient.refetchQueries({ queryKey: ["stats"] }),
       ]);
     },
     onError: (error: any) => {
@@ -217,6 +215,7 @@ function PostsManager() {
                   post={post}
                   onEdit={setEditingPost}
                   onDelete={setDeletingPost}
+                  onView={setViewingPost}
                 />
               ))}
             </div>
@@ -252,6 +251,14 @@ function PostsManager() {
         post={deletingPost}
         isLoading={deleteMutation.isPending}
       />
+
+      {/* View Post Modal */}
+      {viewingPost && (
+        <PostViewModal
+          post={viewingPost}
+          onClose={() => setViewingPost(null)}
+        />
+      )}
     </div>
   );
 }

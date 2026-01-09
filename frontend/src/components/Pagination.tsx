@@ -39,21 +39,28 @@ export default function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-center gap-3 mt-8">
+    <nav
+      aria-label="Pagination navigation"
+      className="flex items-center justify-center gap-3 mt-8"
+    >
       <button
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
+        aria-label="Go to previous page"
+        aria-disabled={page === 1}
         className="px-4 py-2 bg-white text-gray-600 rounded-lg font-semibold transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
       >
-        <span>←</span>
+        <span aria-hidden="true">←</span>
         <span>Previous</span>
       </button>
 
-      <div className="flex gap-2">
+      <div className="flex gap-2" role="group" aria-label="Pagination pages">
         {getPageNumbers().map((pageNum) => (
           <button
             key={pageNum}
             onClick={() => onPageChange(pageNum)}
+            aria-label={`Go to page ${pageNum}`}
+            aria-current={page === pageNum ? "page" : undefined}
             className={`w-[42px] h-[34px] rounded-[8px] font-semibold text-[14px] leading-none flex items-center justify-end pr-2 transition-colors ${
               page === pageNum
                 ? "bg-[#4299E1] text-white"
@@ -68,11 +75,13 @@ export default function Pagination({
       <button
         onClick={() => onPageChange(page + 1)}
         disabled={page === totalPages}
+        aria-label="Go to next page"
+        aria-disabled={page === totalPages}
         className="px-4 py-2 bg-white text-gray-600 rounded-lg font-semibold transition-colors hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-2"
       >
         <span>Next</span>
-        <span>→</span>
+        <span aria-hidden="true">→</span>
       </button>
-    </div>
+    </nav>
   );
 }

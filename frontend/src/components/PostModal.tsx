@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getTags, createAuthor, updateAuthor } from "../services/api";
 import { Post, CreatePostData, UpdatePostData } from "../types";
@@ -65,6 +65,27 @@ export default function PostModal({
     email: "",
     text: "",
   });
+
+  const firstInputRef = useRef<HTMLInputElement>(null);
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && isOpen) {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [isOpen, onClose]);
+
+  // Focus first input when modal opens
+  useEffect(() => {
+    if (isOpen && firstInputRef.current) {
+      setTimeout(() => firstInputRef.current?.focus(), 100);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -260,16 +281,22 @@ export default function PostModal({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center p-4 z-50">
+    <div
+      className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center p-4 z-50"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+    >
       <div className="bg-white rounded-card shadow-card-hover max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 id="modal-title" className="text-2xl font-bold text-gray-800">
             {post ? "✏️ Edit Post" : "➕ Add New Post"}
           </h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
-            aria-label="Close"
+            aria-label="Close modal"
+            type="button"
           >
             ✕
           </button>
@@ -277,8 +304,15 @@ export default function PostModal({
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Author */}
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <div
+            className="space-y-3"
+            role="group"
+            aria-labelledby="author-section-label"
+          >
+            <label
+              id="author-section-label"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
               Author *
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -308,7 +342,11 @@ export default function PostModal({
                   } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
                 />
                 {errors.first_name && (
-                  <p className="text-xs text-red-600 mt-1">
+                  <p
+                    id="first-name-error"
+                    className="text-xs text-red-600 mt-1"
+                    role="alert"
+                  >
                     {errors.first_name}
                   </p>
                 )}
@@ -360,12 +398,22 @@ export default function PostModal({
                   }
                 }}
                 placeholder="Email"
+                aria-label="Author email address"
+                aria-required="true"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "email-error" : undefined}
                 className={`w-full px-4 py-2 border ${
                   errors.email ? "border-red-500" : "border-gray-300"
                 } rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent`}
               />
               {errors.email && (
-                <p className="text-xs text-red-600 mt-1">{errors.email}</p>
+                <p
+                  id="email-error"
+                  className="text-xs text-red-600 mt-1"
+                  role="alert"
+                >
+                  {errors.email}
+                </p>
               )}
             </div>
             <div className="grid grid-cols-2 gap-3">

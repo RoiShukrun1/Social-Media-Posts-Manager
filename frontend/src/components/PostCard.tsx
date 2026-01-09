@@ -4,9 +4,15 @@ interface PostCardProps {
   post: Post;
   onEdit: (post: Post) => void;
   onDelete: (post: Post) => void;
+  onView: (post: Post) => void;
 }
 
-export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
+export default function PostCard({
+  post,
+  onEdit,
+  onDelete,
+  onView,
+}: PostCardProps) {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
@@ -41,7 +47,19 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden">
+    <div
+      className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden cursor-pointer"
+      onClick={() => onView(post)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onView(post);
+        }
+      }}
+      aria-label={`View post by ${post.author.first_name} ${post.author.last_name}`}
+    >
       {/* Image */}
       {post.image_svg ? (
         <div
@@ -79,7 +97,7 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
         </div>
 
         {/* Post Text */}
-        <p className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-3">
+        <p className="text-gray-700 text-sm leading-relaxed mb-4 line-clamp-3 min-h-[4.5rem]">
           {post.text}
         </p>
 
@@ -101,14 +119,20 @@ export default function PostCard({ post, onEdit, onDelete }: PostCardProps) {
           </div>
           <div className="flex items-center gap-2">
             <button
-              onClick={() => onEdit(post)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onEdit(post);
+              }}
               className="p-2 hover:opacity-70 transition-opacity"
               aria-label="Edit post"
             >
               ✏️
             </button>
             <button
-              onClick={() => onDelete(post)}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(post);
+              }}
               className="p-2 hover:opacity-70 transition-opacity"
               aria-label="Delete post"
             >
