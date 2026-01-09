@@ -1,16 +1,57 @@
+/**
+ * server.ts
+ *
+ * Main server application and entry point.
+ * Initializes Express server, sets up middleware, configures routes, and handles database initialization.
+ * Provides RESTful API endpoints for posts, authors, tags, and statistics.
+ */
+
 import express, { Request, Response } from "express";
 import cors from "cors";
 import postsRouter from "./routes/posts";
 import authorsRouter from "./routes/authors";
 import tagsRouter from "./routes/tags";
 import statsRouter from "./routes/stats";
-import { HTTP_STATUS } from "./constants/config";
+import { HTTP_STATUS } from "./constants";
+import { createTables } from "./db/schema";
+import db from "./db/database";
+import { config } from "./config";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = config.port;
+
+// Initialize database on startup
+const initDB = () => {
+  try {
+    // Check if tables exist
+    const tableCheck = db
+      .prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='posts'"
+      )
+      .get();
+
+    if (!tableCheck) {
+      console.log("Initializing database...");
+      createTables();
+      console.log("✓ Database initialized");
+    } else {
+      console.log("✓ Database already initialized");
+    }
+  } catch (error) {
+    console.error("Failed to initialize database:", error);
+    process.exit(1);
+  }
+};
+
+initDB();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: config.cors.origin,
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Request logging

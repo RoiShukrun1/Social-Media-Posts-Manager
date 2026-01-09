@@ -1,5 +1,9 @@
 /**
- * Backend configuration constants
+ * constants.ts
+ *
+ * Application constants and static values.
+ * Defines HTTP status codes, default pagination settings, and SQLite error codes.
+ * Used throughout the application for consistent behavior.
  */
 
 /**

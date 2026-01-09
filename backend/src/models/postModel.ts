@@ -1,3 +1,11 @@
+/**
+ * postModel.ts
+ *
+ * Post data access layer with advanced query capabilities.
+ * Provides methods for CRUD operations with filtering, sorting, and pagination.
+ * Optimized to avoid N+1 query problems by batching tag queries.
+ */
+
 import db from "../db/database";
 import type { Post, PostWithAuthorAndTags, Author, Tag } from "../types";
 
@@ -42,6 +50,15 @@ interface PostWithAuthorRow {
   author_follower_count: number;
   author_verified: number; // SQLite stores boolean as 0/1
 }
+
+// Safe mapping for sort fields to prevent SQL injection
+const SORT_FIELD_MAP = {
+  date: "p.date",
+  likes: "p.likes",
+  comments: "p.comments",
+  shares: "p.shares",
+  engagement_rate: "p.engagement_rate",
+} as const;
 
 export class PostModel {
   static getAllPosts(
@@ -95,6 +112,11 @@ export class PostModel {
 
     // Get paginated results
     const offset = (pagination.page - 1) * pagination.limit;
+
+    // Use safe mapping for sort field and validate sort order
+    const sortColumn = SORT_FIELD_MAP[sort.field] || SORT_FIELD_MAP.date;
+    const sortOrder = sort.order === "ASC" ? "ASC" : "DESC";
+
     const query = `
       SELECT 
         p.*,
@@ -110,7 +132,7 @@ export class PostModel {
       FROM posts p
       JOIN authors a ON p.author_id = a.id
       ${whereClause}
-      ORDER BY p.${sort.field} ${sort.order}
+      ORDER BY ${sortColumn} ${sortOrder}
       LIMIT ? OFFSET ?
     `;
 
@@ -118,10 +140,37 @@ export class PostModel {
       .prepare(query)
       .all(...params, pagination.limit, offset) as PostWithAuthorRow[];
 
-    // Transform rows and get tags for each post
-    const posts: PostWithAuthorAndTags[] = rows.map((row) => {
-      const tags = this.getPostTags(row.id);
+    // If no posts, return early
+    if (rows.length === 0) {
+      return { posts: [], total };
+    }
 
+    // Fetch all tags for all posts in a single query
+    const postIds = rows.map((row) => row.id);
+    const tagsQuery = `
+      SELECT pt.post_id, t.name
+      FROM post_tags pt
+      JOIN tags t ON pt.tag_id = t.id
+      WHERE pt.post_id IN (${postIds.map(() => "?").join(",")})
+      ORDER BY t.name
+    `;
+
+    const tagRows = db.prepare(tagsQuery).all(...postIds) as Array<{
+      post_id: number;
+      name: string;
+    }>;
+
+    // Group tags by post_id for O(1) lookup
+    const tagsByPost = new Map<number, string[]>();
+    for (const tag of tagRows) {
+      if (!tagsByPost.has(tag.post_id)) {
+        tagsByPost.set(tag.post_id, []);
+      }
+      tagsByPost.get(tag.post_id)!.push(tag.name);
+    }
+
+    // Transform rows with efficient tag lookup
+    const posts: PostWithAuthorAndTags[] = rows.map((row) => {
       return {
         id: row.id,
         author_id: row.author_id,
@@ -147,7 +196,7 @@ export class PostModel {
           follower_count: row.author_follower_count,
           verified: Boolean(row.author_verified),
         },
-        tags,
+        tags: tagsByPost.get(row.id) || [],
       };
     });
 

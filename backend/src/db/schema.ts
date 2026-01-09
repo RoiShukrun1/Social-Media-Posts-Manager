@@ -1,3 +1,11 @@
+/**
+ * schema.ts
+ *
+ * Database schema definition and table creation.
+ * Defines the structure for authors, posts, tags, and post_tags tables.
+ * Includes indexes for optimized query performance.
+ */
+
 import db from "./database";
 
 export function createTables() {

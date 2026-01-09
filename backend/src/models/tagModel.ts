@@ -1,3 +1,11 @@
+/**
+ * tagModel.ts
+ *
+ * Tag data access layer.
+ * Provides methods for retrieving all tags sorted alphabetically.
+ * Tags are managed automatically through post operations.
+ */
+
 import db from "../db/database";
 import type { Tag } from "../types";
 

@@ -1,7 +1,15 @@
+/**
+ * stats.ts
+ *
+ * Statistics routes and request handlers.
+ * Handles HTTP endpoint for retrieving dashboard statistics.
+ * Provides aggregated metrics including total posts, likes, comments, and average engagement rate.
+ */
+
 import { Router, Request, Response } from "express";
 import { StatsModel } from "../models/statsModel";
 import { getErrorMessage } from "../utils/errorHandler";
-import { HTTP_STATUS } from "../constants/config";
+import { HTTP_STATUS } from "../constants";
 
 const router = Router();
 

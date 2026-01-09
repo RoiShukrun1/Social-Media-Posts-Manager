@@ -1,5 +1,9 @@
 /**
- * Utility functions for error handling
+ * errorHandler.ts
+ *
+ * Error handling utilities and type guards.
+ * Provides safe error message extraction and type checking for various error types.
+ * Supports ZodError validation errors and SQLite database errors.
  */
 
 /**

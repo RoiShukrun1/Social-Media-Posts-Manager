@@ -1,16 +1,21 @@
+/**
+ * import.ts
+ *
+ * CSV data import functionality.
+ * Handles importing social media posts data from CSV file into the database.
+ * Uses transactions for performance and includes error handling for data integrity.
+ */
+
 import fs from "fs";
-import path from "path";
 import { parse } from "csv-parse/sync";
-import db from "../db/database";
+import db from "./database";
 import type { CSVRow, Author, Tag } from "../types";
 import { hasErrorCode } from "../utils/errorHandler";
-import { SQLITE_ERRORS } from "../constants/config";
+import { SQLITE_ERRORS } from "../constants";
+import { config } from "../config";
 
 export async function importDataFromCSV() {
-  const csvPath = path.join(
-    __dirname,
-    "../../../data/social_media_posts_data_clean.csv"
-  );
+  const csvPath = config.csv.path;
 
   if (!fs.existsSync(csvPath)) {
     throw new Error(`CSV file not found: ${csvPath}`);

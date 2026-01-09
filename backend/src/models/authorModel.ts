@@ -1,3 +1,11 @@
+/**
+ * authorModel.ts
+ *
+ * Author data access layer.
+ * Provides methods for CRUD operations on authors table.
+ * Handles author retrieval, creation, and updates with proper validation.
+ */
+
 import db from "../db/database";
 import type { Author } from "../types";
 

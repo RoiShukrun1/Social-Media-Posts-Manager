@@ -42,6 +42,12 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
   const [localSortBy, setLocalSortBy] = useState<string>(filters.sortBy || "");
   const [errors, setErrors] = useState<ValidationErrors>({});
   const isFirstRender = useRef(true);
+  const filtersRef = useRef(filters);
+
+  // Keep filters ref up to date
+  useEffect(() => {
+    filtersRef.current = filters;
+  }, [filters]);
 
   // Debounce search
   useEffect(() => {
@@ -52,14 +58,14 @@ export default function Filters({ filters, onFiltersChange }: FiltersProps) {
 
     const timer = setTimeout(() => {
       onFiltersChange({
-        ...filters,
+        ...filtersRef.current,
         search: localSearch || undefined,
         page: 1,
       });
     }, DEFAULTS.debounceMs);
 
     return () => clearTimeout(timer);
-  }, [localSearch, filters, onFiltersChange]);
+  }, [localSearch, onFiltersChange]);
 
   const validateDate = (dateStr: string): boolean => {
     if (!dateStr) return true; // Empty is valid

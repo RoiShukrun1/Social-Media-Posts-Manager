@@ -1,3 +1,11 @@
+/**
+ * posts.ts
+ *
+ * Post routes and request handlers.
+ * Handles all HTTP endpoints for post operations including listing, creation, updates, and deletion.
+ * Includes Zod validation, filtering, sorting, and pagination support.
+ */
+
 import { Router, Request, Response } from "express";
 import { PostModel } from "../models/postModel";
 import { z } from "zod";
@@ -6,7 +14,7 @@ import {
   hasErrorName,
   hasErrorDetails,
 } from "../utils/errorHandler";
-import { HTTP_STATUS, DEFAULTS } from "../constants/config";
+import { HTTP_STATUS, DEFAULTS } from "../constants";
 
 const router = Router();
 

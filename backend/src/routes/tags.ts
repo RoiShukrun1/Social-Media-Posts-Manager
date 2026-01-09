@@ -1,7 +1,15 @@
+/**
+ * tags.ts
+ *
+ * Tag routes and request handlers.
+ * Handles HTTP endpoint for retrieving all available tags.
+ * Tags are automatically created and managed through post operations.
+ */
+
 import { Router, Request, Response } from "express";
 import { TagModel } from "../models/tagModel";
 import { getErrorMessage } from "../utils/errorHandler";
-import { HTTP_STATUS } from "../constants/config";
+import { HTTP_STATUS } from "../constants";
 
 const router = Router();
 

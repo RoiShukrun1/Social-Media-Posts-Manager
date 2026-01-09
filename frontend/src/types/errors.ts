@@ -1,6 +1,6 @@
 /**
  * types/errors.ts
- * 
+ *
  * Error handling utilities and type definitions.
  * Provides consistent error message extraction from various error types.
  */
@@ -10,7 +10,10 @@
  */
 export interface ApiErrorResponse {
   error?: string;
-  details?: unknown;
+  details?: Array<{
+    path: (string | number)[];
+    message: string;
+  }>;
   message?: string;
 }
 
@@ -42,7 +45,17 @@ export function isMutationError(error: unknown): error is MutationError {
  */
 export function getErrorMessage(error: unknown): string {
   if (isMutationError(error)) {
-    return error.response?.data?.error || error.message;
+    const errorData = error.response?.data;
+
+    // If there are validation details, format them nicely
+    if (errorData?.details && Array.isArray(errorData.details)) {
+      const detailMessages = errorData.details
+        .map((detail) => detail.message)
+        .join(", ");
+      return detailMessages || errorData.error || error.message;
+    }
+
+    return errorData?.error || error.message;
   }
 
   if (error instanceof Error) {

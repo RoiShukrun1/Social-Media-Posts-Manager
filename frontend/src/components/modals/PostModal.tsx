@@ -13,6 +13,7 @@ import { getTags, createAuthor, updateAuthor } from "../../services/api";
 import { Post, CreatePostData, UpdatePostData } from "../../types";
 import { DEFAULTS } from "../../constants/config";
 import { useEscapeKey } from "../../hooks/useEscapeKey";
+import { getErrorMessage } from "../../types/errors";
 import AuthorFormSection from "../forms/AuthorFormSection";
 import PostFormSection from "../forms/PostFormSection";
 import TagSelection from "../forms/TagSelection";
@@ -221,9 +222,7 @@ export default function PostModal({
         authorId = newAuthor.id;
       } catch (error) {
         console.error("Failed to create author:", error);
-        toast.error(
-          "Failed to create author. Please check if the email already exists."
-        );
+        toast.error(getErrorMessage(error));
         return;
       }
     }
@@ -250,9 +249,7 @@ export default function PostModal({
           });
         } catch (error) {
           console.error("Failed to update author:", error);
-          toast.error(
-            "Failed to update author. Please check if the email already exists."
-          );
+          toast.error(getErrorMessage(error));
           return;
         }
       }
