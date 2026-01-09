@@ -1,6 +1,6 @@
 /**
  * api.ts
- * 
+ *
  * API service layer for all backend communication.
  * Handles HTTP requests for posts, authors, tags, and statistics.
  * Uses axios for HTTP client with centralized configuration.
@@ -17,7 +17,7 @@ import type {
   CreateAuthorData,
   Tag,
   Stats,
-} from "../types";
+} from "./types";
 
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL || "http://localhost:3000/api";

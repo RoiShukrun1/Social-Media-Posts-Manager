@@ -1,6 +1,6 @@
 /**
  * formatters.ts
- * 
+ *
  * Utility functions for formatting numbers and dates.
  * Provides consistent formatting across the application.
  */

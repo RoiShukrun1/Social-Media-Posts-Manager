@@ -9,7 +9,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { getTags, createAuthor, updateAuthor } from "../../services/api";
+import { getTags, createAuthor, updateAuthor } from "../../api";
 import { Post, CreatePostData, UpdatePostData } from "../../types";
 import { DEFAULTS } from "../../constants/config";
 import { useEscapeKey } from "../../hooks/useEscapeKey";

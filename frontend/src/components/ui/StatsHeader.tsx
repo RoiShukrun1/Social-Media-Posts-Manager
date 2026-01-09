@@ -7,7 +7,7 @@
 
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { getStats } from "../../services/api";
+import { getStats } from "../../api";
 import { formatNumberCompact } from "../../utils/formatters";
 import { COLORS } from "../../constants/config";
 

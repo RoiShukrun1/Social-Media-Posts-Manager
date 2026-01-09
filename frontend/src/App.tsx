@@ -15,7 +15,7 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-import { getPosts, createPost, updatePost, deletePost } from "./services/api";
+import { getPosts, createPost, updatePost, deletePost } from "./api";
 import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
 import { getErrorMessage } from "./types/errors";
 import { DEFAULTS } from "./constants/config";

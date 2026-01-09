@@ -14,6 +14,7 @@ import tagsRouter from "./routes/tags";
 import statsRouter from "./routes/stats";
 import { HTTP_STATUS } from "./constants";
 import { createTables } from "./db/schema";
+import { importDataFromCSV } from "./db/import";
 import db from "./db/database";
 import { config } from "./config";
 
@@ -21,7 +22,7 @@ const app = express();
 const PORT = config.port;
 
 // Initialize database on startup
-const initDB = () => {
+const initDB = async () => {
   try {
     // Check if tables exist
     const tableCheck = db
@@ -33,6 +34,19 @@ const initDB = () => {
     if (!tableCheck) {
       console.log("Initializing database...");
       createTables();
+      console.log("✓ Database schema created");
+
+      // Check if database is empty and import data
+      const postCount = db
+        .prepare("SELECT COUNT(*) as count FROM posts")
+        .get() as { count: number };
+
+      if (postCount.count === 0) {
+        console.log("Database is empty. Importing data from CSV...");
+        await importDataFromCSV();
+        console.log("✓ Data import completed");
+      }
+
       console.log("✓ Database initialized");
     } else {
       console.log("✓ Database already initialized");
@@ -42,8 +56,6 @@ const initDB = () => {
     process.exit(1);
   }
 };
-
-initDB();
 
 // Middleware
 app.use(
@@ -88,28 +100,35 @@ app.use((err: Error, req: Request, res: Response, _next: unknown) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(
-    "================================================================================"
-  );
-  console.log("SOCIAL MEDIA POSTS MANAGEMENT SYSTEM - BACKEND API");
-  console.log(
-    "================================================================================"
-  );
-  console.log(`Server running on http://localhost:${PORT}`);
-  console.log(`Health check: http://localhost:${PORT}/health`);
-  console.log("\nAvailable endpoints:");
-  console.log(
-    "  GET    /api/posts          - List posts (with filters, sorting, pagination)"
-  );
-  console.log("  POST   /api/posts          - Create new post");
-  console.log("  PUT    /api/posts/:id      - Update post");
-  console.log("  DELETE /api/posts/:id      - Delete post");
-  console.log("  POST   /api/authors        - Create new author");
-  console.log("  PUT    /api/authors/:id    - Update author");
-  console.log("  GET    /api/tags           - List all tags");
-  console.log("  GET    /api/stats          - Get dashboard statistics");
-  console.log(
-    "================================================================================"
-  );
-});
+// Start server after database initialization
+const startServer = async () => {
+  await initDB();
+
+  app.listen(PORT, () => {
+    console.log(
+      "================================================================================"
+    );
+    console.log("SOCIAL MEDIA POSTS MANAGEMENT SYSTEM - BACKEND API");
+    console.log(
+      "================================================================================"
+    );
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log(`Health check: http://localhost:${PORT}/health`);
+    console.log("\nAvailable endpoints:");
+    console.log(
+      "  GET    /api/posts          - List posts (with filters, sorting, pagination)"
+    );
+    console.log("  POST   /api/posts          - Create new post");
+    console.log("  PUT    /api/posts/:id      - Update post");
+    console.log("  DELETE /api/posts/:id      - Delete post");
+    console.log("  POST   /api/authors        - Create new author");
+    console.log("  PUT    /api/authors/:id    - Update author");
+    console.log("  GET    /api/tags           - List all tags");
+    console.log("  GET    /api/stats          - Get dashboard statistics");
+    console.log(
+      "================================================================================"
+    );
+  });
+};
+
+startServer();
