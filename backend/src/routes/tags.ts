@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { TagModel } from "../models/tagModel";
+import { getErrorMessage } from "../utils/errorHandler";
 
 const router = Router();
 
@@ -12,10 +13,10 @@ router.get("/", (req: Request, res: Response) => {
       success: true,
       data: tags,
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });

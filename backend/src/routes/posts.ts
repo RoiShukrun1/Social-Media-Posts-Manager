@@ -1,6 +1,11 @@
 import { Router, Request, Response } from "express";
 import { PostModel } from "../models/postModel";
 import { z } from "zod";
+import {
+  getErrorMessage,
+  hasErrorName,
+  hasErrorDetails,
+} from "../utils/errorHandler";
 
 const router = Router();
 
@@ -13,22 +18,34 @@ router.get("/", (req: Request, res: Response) => {
     const sortOrder =
       (req.query.order as string)?.toUpperCase() === "ASC" ? "ASC" : "DESC";
 
-    const filters: any = {};
+    const filters: {
+      category?: string;
+      search?: string;
+      dateFrom?: string;
+      dateTo?: string;
+    } = {};
 
-    if (req.query.category) filters.category = req.query.category;
-    if (req.query.search) filters.search = req.query.search;
-    if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom;
-    if (req.query.dateTo) filters.dateTo = req.query.dateTo;
+    if (req.query.category) filters.category = req.query.category as string;
+    if (req.query.search) filters.search = req.query.search as string;
+    if (req.query.dateFrom) filters.dateFrom = req.query.dateFrom as string;
+    if (req.query.dateTo) filters.dateTo = req.query.dateTo as string;
 
-    const sort: any = {
-      field: [
-        "date",
-        "likes",
-        "comments",
-        "shares",
-        "engagement_rate",
-      ].includes(sortField)
-        ? sortField
+    const validSortFields = [
+      "date",
+      "likes",
+      "comments",
+      "shares",
+      "engagement_rate",
+    ] as const;
+
+    const sort: {
+      field: (typeof validSortFields)[number];
+      order: "ASC" | "DESC";
+    } = {
+      field: validSortFields.includes(
+        sortField as (typeof validSortFields)[number]
+      )
+        ? (sortField as (typeof validSortFields)[number])
         : "date",
       order: sortOrder,
     };
@@ -45,10 +62,10 @@ router.get("/", (req: Request, res: Response) => {
         totalPages: Math.ceil(result.total / limit),
       },
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -102,18 +119,18 @@ router.post("/", (req: Request, res: Response) => {
       success: true,
       data: newPost,
     });
-  } catch (error: any) {
-    if (error.name === "ZodError") {
+  } catch (error) {
+    if (hasErrorName(error) && error.name === "ZodError") {
       return res.status(400).json({
         success: false,
         error: "Validation error",
-        details: error.errors,
+        details: hasErrorDetails(error) ? error.errors : undefined,
       });
     }
 
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -136,7 +153,11 @@ router.put("/:id", (req: Request, res: Response) => {
     const { tags, ...postData } = validatedData;
 
     // Convert undefined to null for optional fields
-    const cleanedPostData: any = { ...postData };
+    const cleanedPostData: Partial<typeof postData> & {
+      image_svg?: string | null;
+      location?: string | null;
+    } = { ...postData };
+
     if (
       "image_svg" in cleanedPostData &&
       cleanedPostData.image_svg === undefined
@@ -166,18 +187,18 @@ router.put("/:id", (req: Request, res: Response) => {
       data: updatedPost,
       message: "Post updated successfully",
     });
-  } catch (error: any) {
-    if (error.name === "ZodError") {
+  } catch (error) {
+    if (hasErrorName(error) && error.name === "ZodError") {
       return res.status(400).json({
         success: false,
         error: "Validation error",
-        details: error.errors,
+        details: hasErrorDetails(error) ? error.errors : undefined,
       });
     }
 
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -199,10 +220,10 @@ router.delete("/:id", (req: Request, res: Response) => {
       success: true,
       message: "Post deleted successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });

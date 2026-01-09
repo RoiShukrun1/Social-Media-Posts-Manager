@@ -18,6 +18,31 @@ export interface PaginationParams {
   limit: number;
 }
 
+// Database row type for posts with author data
+interface PostWithAuthorRow {
+  id: number;
+  author_id: number;
+  text: string;
+  date: string;
+  likes: number;
+  comments: number;
+  shares: number;
+  image_svg: string | null;
+  category: string;
+  location: string | null;
+  engagement_rate: number;
+  created_at: string;
+  updated_at: string;
+  author_first_name: string;
+  author_last_name: string;
+  author_email: string;
+  author_company: string;
+  author_job_title: string;
+  author_bio: string;
+  author_follower_count: number;
+  author_verified: number; // SQLite stores boolean as 0/1
+}
+
 export class PostModel {
   static getAllPosts(
     filters: PostFilters = {},
@@ -25,7 +50,7 @@ export class PostModel {
     pagination: PaginationParams = { page: 1, limit: 20 }
   ): { posts: PostWithAuthorAndTags[]; total: number } {
     let whereConditions: string[] = [];
-    let params: any[] = [];
+    let params: (string | number)[] = [];
 
     // Build WHERE clause
     if (filters.category) {
@@ -91,7 +116,7 @@ export class PostModel {
 
     const rows = db
       .prepare(query)
-      .all(...params, pagination.limit, offset) as any[];
+      .all(...params, pagination.limit, offset) as PostWithAuthorRow[];
 
     // Transform rows and get tags for each post
     const posts: PostWithAuthorAndTags[] = rows.map((row) => {
@@ -147,7 +172,7 @@ export class PostModel {
       WHERE p.id = ?
     `;
 
-    const row = db.prepare(query).get(id) as any;
+    const row = db.prepare(query).get(id) as PostWithAuthorRow | undefined;
     if (!row) return null;
 
     const tags = this.getPostTags(row.id);
@@ -231,7 +256,7 @@ export class PostModel {
     tags?: string[]
   ): boolean {
     const updates: string[] = [];
-    const params: any[] = [];
+    const params: (string | number | null)[] = [];
 
     // Build dynamic UPDATE clause
     if (post.text !== undefined) {

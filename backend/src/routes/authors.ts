@@ -1,5 +1,6 @@
 import { Router, Request, Response } from "express";
 import { AuthorModel } from "../models/authorModel";
+import { getErrorMessage } from "../utils/errorHandler";
 
 const router = Router();
 
@@ -51,10 +52,10 @@ router.post("/", (req: Request, res: Response) => {
       success: true,
       data: newAuthor,
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });
@@ -95,7 +96,17 @@ router.put("/:id", (req: Request, res: Response) => {
       }
     }
 
-    const updateData: any = {};
+    const updateData: {
+      first_name?: string;
+      last_name?: string;
+      email?: string;
+      company?: string;
+      job_title?: string;
+      bio?: string;
+      follower_count?: number;
+      verified?: boolean;
+    } = {};
+
     if (first_name !== undefined) updateData.first_name = first_name;
     if (last_name !== undefined) updateData.last_name = last_name;
     if (email !== undefined) updateData.email = email;
@@ -122,10 +133,10 @@ router.put("/:id", (req: Request, res: Response) => {
       data: updatedAuthor,
       message: "Author updated successfully",
     });
-  } catch (error: any) {
+  } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.message,
+      error: getErrorMessage(error),
     });
   }
 });

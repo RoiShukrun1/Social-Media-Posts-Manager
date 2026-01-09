@@ -38,7 +38,7 @@ app.use((req: Request, res: Response) => {
 });
 
 // Error handler
-app.use((err: Error, req: Request, res: Response, next: any) => {
+app.use((err: Error, req: Request, res: Response, _next: unknown) => {
   console.error("Error:", err);
   res.status(500).json({
     success: false,

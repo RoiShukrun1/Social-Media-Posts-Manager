@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-query";
 import { getPosts, createPost, updatePost, deletePost } from "./services/api";
 import { Post, PostFilters, CreatePostData, UpdatePostData } from "./types";
+import { getErrorMessage } from "./types/errors";
+import "./types/events"; // Import to register custom events
 
 import StatsHeader from "./components/StatsHeader";
 import Filters from "./components/Filters";
@@ -45,9 +47,9 @@ function PostsManager() {
   // Listen for add post button click from header
   useEffect(() => {
     const handleOpenModal = () => setIsCreateModalOpen(true);
-    window.addEventListener("openAddPostModal" as any, handleOpenModal);
+    window.addEventListener("openAddPostModal", handleOpenModal);
     return () =>
-      window.removeEventListener("openAddPostModal" as any, handleOpenModal);
+      window.removeEventListener("openAddPostModal", handleOpenModal);
   }, []);
 
   // Fetch posts
@@ -73,21 +75,10 @@ function PostsManager() {
         queryClient.refetchQueries({ queryKey: ["stats"] }),
       ]);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Create mutation failed:", error);
-      const errorMessage = error?.response?.data?.error || error.message;
-      const errorDetails = error?.response?.data?.details;
-      if (errorDetails) {
-        alert(
-          `Failed to create post: ${errorMessage}\n${JSON.stringify(
-            errorDetails,
-            null,
-            2
-          )}`
-        );
-      } else {
-        alert("Failed to create post: " + errorMessage);
-      }
+      const errorMessage = getErrorMessage(error);
+      alert("Failed to create post: " + errorMessage);
     },
   });
 
@@ -109,22 +100,10 @@ function PostsManager() {
         queryClient.refetchQueries({ queryKey: ["stats"] }),
       ]);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Update mutation failed:", error);
-      const errorMessage = error?.response?.data?.error || error.message;
-      const errorDetails = error?.response?.data?.details;
-      if (errorDetails) {
-        console.error("Validation details:", errorDetails);
-        alert(
-          `Failed to update post: ${errorMessage}\n${JSON.stringify(
-            errorDetails,
-            null,
-            2
-          )}`
-        );
-      } else {
-        alert("Failed to update post: " + errorMessage);
-      }
+      const errorMessage = getErrorMessage(error);
+      alert("Failed to update post: " + errorMessage);
     },
   });
 
@@ -145,9 +124,9 @@ function PostsManager() {
         queryClient.refetchQueries({ queryKey: ["stats"] }),
       ]);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Delete mutation failed:", error);
-      const errorMessage = error?.response?.data?.error || error.message;
+      const errorMessage = getErrorMessage(error);
       alert("Failed to delete post: " + errorMessage);
     },
   });
