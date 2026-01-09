@@ -1,6 +1,6 @@
 # 📊 Social Media Posts Management System
 
-A full-stack application for managing social media posts with data cleaning, RESTful API, and beautiful React UI.
+A full-stack application for managing social media posts with data cleaning, RESTful API and React UI.
 
 ![Tech Stack](https://img.shields.io/badge/React-19-blue)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)

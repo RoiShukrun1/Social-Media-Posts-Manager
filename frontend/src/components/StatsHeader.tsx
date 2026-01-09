@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { getStats } from "../services/api";
+import { formatNumberCompact } from "../utils/formatters";
 
 export default function StatsHeader() {
   const { data: stats, isLoading } = useQuery({
@@ -29,15 +30,6 @@ export default function StatsHeader() {
       </div>
     );
   }
-
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`;
-    } else if (num >= 1000) {
-      return `${Math.floor(num / 1000)}K`;
-    }
-    return num.toLocaleString();
-  };
 
   return (
     <div className="pt-8">
@@ -77,11 +69,17 @@ export default function StatsHeader() {
         />
         <StatCard
           title="Total Likes"
-          value={stats?.totalLikes ? formatNumber(stats.totalLikes) : "0"}
+          value={
+            stats?.totalLikes ? formatNumberCompact(stats.totalLikes) : "0"
+          }
         />
         <StatCard
           title="Total Comments"
-          value={stats?.totalComments ? formatNumber(stats.totalComments) : "0"}
+          value={
+            stats?.totalComments
+              ? formatNumberCompact(stats.totalComments)
+              : "0"
+          }
         />
         <StatCard
           title="Avg Engagement"

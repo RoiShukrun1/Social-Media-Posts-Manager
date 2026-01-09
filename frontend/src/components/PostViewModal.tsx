@@ -1,5 +1,7 @@
-import { useEffect } from "react";
 import { Post } from "../types";
+import { formatDate, formatNumber } from "../utils/formatters";
+import { useEscapeKey } from "../hooks/useEscapeKey";
+import { useBodyScrollLock } from "../hooks/useBodyScrollLock";
 
 interface PostViewModalProps {
   post: Post;
@@ -7,58 +9,9 @@ interface PostViewModalProps {
 }
 
 export default function PostViewModal({ post, onClose }: PostViewModalProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    let relativeTime = "";
-    if (diffDays === 0) relativeTime = "Today";
-    else if (diffDays === 1) relativeTime = "1 day ago";
-    else if (diffDays < 7) relativeTime = `${diffDays} days ago`;
-    else if (diffDays < 14) relativeTime = "1 week ago";
-    else if (diffDays < 30)
-      relativeTime = `${Math.floor(diffDays / 7)} weeks ago`;
-    else if (diffDays < 60) relativeTime = "1 month ago";
-    else if (diffDays < 365)
-      relativeTime = `${Math.floor(diffDays / 30)} months ago`;
-    else
-      relativeTime = `${Math.floor(diffDays / 365)} year${
-        Math.floor(diffDays / 365) > 1 ? "s" : ""
-      } ago`;
-
-    const formattedDate = date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    return `${relativeTime} • ${formattedDate}`;
-  };
-
-  const formatNumber = (num: number) => {
-    return num.toLocaleString();
-  };
-
-  // Handle Escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [onClose]);
-
-  // Prevent body scroll when modal is open
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "unset";
-    };
-  }, []);
+  // Handle Escape key and prevent body scroll
+  useEscapeKey(onClose);
+  useBodyScrollLock();
 
   return (
     <div

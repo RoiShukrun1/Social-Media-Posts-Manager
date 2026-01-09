@@ -1,23 +1,11 @@
 import { useState, useEffect, useRef } from "react";
 import { PostFilters } from "../types";
+import { CATEGORIES } from "../constants/categories";
 
 interface FiltersProps {
   filters: PostFilters;
   onFiltersChange: (filters: PostFilters) => void;
 }
-
-const CATEGORIES = [
-  "Technology",
-  "Business",
-  "Entertainment",
-  "Health",
-  "Sports",
-  "Travel",
-  "Food",
-  "Fashion",
-  "Education",
-  "Science",
-];
 
 const SORT_OPTIONS = ["date", "likes", "comments", "shares", "engagement rate"];
 

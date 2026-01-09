@@ -1,4 +1,5 @@
 import { Post } from "../types";
+import { formatDate, formatNumber } from "../utils/formatters";
 
 interface PostCardProps {
   post: Post;
@@ -13,39 +14,6 @@ export default function PostCard({
   onDelete,
   onView,
 }: PostCardProps) {
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    let relativeTime = "";
-    if (diffDays === 0) relativeTime = "Today";
-    else if (diffDays === 1) relativeTime = "1 day ago";
-    else if (diffDays < 7) relativeTime = `${diffDays} days ago`;
-    else if (diffDays < 14) relativeTime = "1 week ago";
-    else if (diffDays < 30)
-      relativeTime = `${Math.floor(diffDays / 7)} weeks ago`;
-    else if (diffDays < 60) relativeTime = "1 month ago";
-    else if (diffDays < 365)
-      relativeTime = `${Math.floor(diffDays / 30)} months ago`;
-    else
-      relativeTime = `${Math.floor(diffDays / 365)} year${
-        Math.floor(diffDays / 365) > 1 ? "s" : ""
-      } ago`;
-
-    const formattedDate = date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-    return `${relativeTime} • ${formattedDate}`;
-  };
-
-  const formatNumber = (num: number) => {
-    return num.toLocaleString();
-  };
-
   return (
     <div
       className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden cursor-pointer"

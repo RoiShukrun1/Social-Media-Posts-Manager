@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getTags, createAuthor, updateAuthor } from "../services/api";
 import { Post, CreatePostData, UpdatePostData } from "../types";
+import { CATEGORIES } from "../constants/categories";
+import { useEscapeKey } from "../hooks/useEscapeKey";
 
 interface PostModalProps {
   isOpen: boolean;
@@ -10,19 +12,6 @@ interface PostModalProps {
   post?: Post | null;
   isLoading?: boolean;
 }
-
-const CATEGORIES = [
-  "Technology",
-  "Business",
-  "Entertainment",
-  "Health",
-  "Sports",
-  "Travel",
-  "Food",
-  "Fashion",
-  "Education",
-  "Science",
-];
 
 export default function PostModal({
   isOpen,
@@ -69,16 +58,7 @@ export default function PostModal({
   const firstInputRef = useRef<HTMLInputElement>(null);
 
   // Handle Escape key to close modal
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-    return () => document.removeEventListener("keydown", handleEscape);
-  }, [isOpen, onClose]);
+  useEscapeKey(onClose, isOpen);
 
   // Focus first input when modal opens
   useEffect(() => {
