@@ -53,7 +53,7 @@ export default function PostCard({
           />
         ) : (
           <div
-            className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden [&>svg]:w-full [&>svg]:h-full [&>svg]:object-cover"
+            className="w-full h-64 flex items-center justify-center text-white text-2xl font-semibold overflow-hidden bg-gray-50 [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:w-auto [&>svg]:h-auto"
             dangerouslySetInnerHTML={{ __html: post.image_svg }}
           />
         )
