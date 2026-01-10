@@ -1,9 +1,15 @@
 # IDE settings
 .vscode/
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
+*.sw?
 *~
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
 
 # Python
 scripts/venv/
@@ -18,23 +24,35 @@ node_modules/
 .npm
 .eslintcache
 
+# Frontend build output (Vite)
+frontend/dist/
+frontend/dist-ssr/
+frontend/.vite/
+
+# Backend build output
+backend/dist/
+
 # Environment
 .env
 .env.local
+*.local
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Database
-*.db
+# Database (ignore data but keep schema/migrations)
+backend/data/*.db
 *.sqlite
 *.sqlite3
 
 # Logs
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
 

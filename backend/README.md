@@ -38,7 +38,7 @@ The server will **automatically** on first startup:
 - Set up indexes for optimal query performance
 - Start on `http://localhost:3000`
 
-**First-time startup takes ~10-15 seconds** to import 25,000 posts.
+**First-time startup Process** import 25,000 posts from the csv will take a bit longer.
 
 > **Manual Database Reset**: Run `npm run db:migrate` if you need to reset/rebuild the database
 

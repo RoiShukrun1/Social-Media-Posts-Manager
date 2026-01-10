@@ -1,0 +1,41 @@
+{
+  "name": "social-media-posts-manager",
+  "version": "1.0.0",
+  "description": "Full-stack social media posts management system with React, TypeScript, Node.js, and SQLite",
+  "private": true,
+  "scripts": {
+    "setup": "cd scripts && python3 -m venv venv && . venv/bin/activate && pip install -r requirements.txt && python clean_csv.py",
+    "clean-data": "cd scripts && python3 clean_csv.py",
+    "install:all": "cd backend && npm install && cd ../frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:frontend": "cd frontend && npm install",
+    "dev": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,magenta\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "start": "concurrently --names \"BACKEND,FRONTEND\" --prefix-colors \"blue,magenta\" \"npm run start:backend\" \"npm run start:frontend\"",
+    "start:backend": "cd backend && npm start",
+    "start:frontend": "cd frontend && npm run preview",
+    "db:reset": "cd backend && npm run db:migrate"
+  },
+  "keywords": [
+    "social-media",
+    "posts-management",
+    "react",
+    "typescript",
+    "node",
+    "express",
+    "sqlite"
+  ],
+  "author": "Roi Shukrun",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
