@@ -4,7 +4,7 @@ The clean_csv.py script cleans the corrupted social media posts CSV data and out
 
 ## Prerequisites
 
-- Python 3.7 or higher
+- Python 3.8 or higher
 - pip (Python package installer)
 
 ## Installation
@@ -52,7 +52,6 @@ The script performs the following data cleaning operations:
 9. **Missing SVG Images** - Standardizes missing/empty SVG fields to NULL
 10. **Tag Deduplication** - Removes duplicate tags while preserving order
 11. **JSON Format Standardization** - Consistent spacing: ["#tech", "#AI"] (space after comma)
-12. **Data Validation** - Validates emails, numeric ranges (follower counts, engagement rates)
 
 ## Output
 
@@ -159,15 +158,6 @@ The quality report contains detailed information about all issues found and fixe
 - Standardized all `post_tags` to consistent format: `["#tech", "#AI"]`
 - Used `json.dumps()` with `separators=(', ', ', ')` for space after comma
 
-### 12. Invalid Numeric Ranges
-
-**Problem**: Potentially negative follower counts or out-of-range engagement rates  
-**Solution**:
-
-- Validated `author_follower_count` ≥ 0
-- Validated `engagement_rate` between 0-100
-- **Note**: No invalid ranges found in this dataset
-
 ## Data Quality Issues Summary
 
 Complete report of all data quality issues found and fixed:
@@ -185,9 +175,8 @@ Complete report of all data quality issues found and fixed:
 | **Missing SVG Images**           | 10,015 (40.1%) | Standardized empty fields to NULL                                                                                          |
 | **Duplicate Tags**               | 11,469         | Removed from 9,983 rows (39.9%)<br>• Deduplicated while preserving order                                                   |
 | **JSON Format Standardization**  | 25,000         | All rows reformatted<br>• Format: ["#tech", "#AI"] with space after comma                                                  |
-| **Invalid Numeric Ranges**       | 0              | Validated follower counts ≥ 0 and engagement rates 0-100<br>• No issues found in dataset                                   |
 | **Total Rows Processed**         | 25,000         | All rows successfully cleaned                                                                                              |
-| **Total Issue Categories Fixed** | 12             | All categories documented in report                                                                                        |
+| **Total Issue Categories Fixed** | 11             | All categories documented in report                                                                                        |
 
 ## Example Output
 
@@ -248,7 +237,7 @@ CSV DATA CLEANING SCRIPT
 CLEANING SUMMARY
 ================================================================================
 Total rows processed: 25000
-Total issue categories fixed: 12
+Total issue categories fixed: 11
 Output file: ../data/social_media_posts_data_clean.csv
 Report file: ../data/data_quality_report.json
 ================================================================================

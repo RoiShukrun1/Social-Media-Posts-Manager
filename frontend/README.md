@@ -8,10 +8,10 @@ React + TypeScript + Tailwind CSS frontend for managing social media posts.
 - 🔍 Advanced filtering and search (debounced)
 - 📅 Date range filtering (dd/mm/yyyy)
 - 🔤 Category filtering (case-insensitive)
-- 📈 Sort by multiple metrics
+- 📈 Sort by multiple metrics (desc order by defalut)
 - ➕ Create new posts with inline validation
 - 🖼️ Image uploader with drag-and-drop and preview (max 5MB)
-- 👤 Create authors dynamically (free text fields)
+- 👤 Create authors dynamically (free text fields on the post modal)
 - ✏️ Edit existing posts and author details
 - 🗑️ Delete posts with confirmation
 - 👁️ Expand posts to view full text (click on card)
@@ -88,39 +88,39 @@ src/
 ├── main.tsx                  # Entry point
 ├── index.css                 # Global styles
 ├── components/               # React components
-│   ├── Filters.tsx          # Filter controls
-│   ├── forms/               # Form components (5 files)
+│   ├── Filters.tsx           # Filter controls
+│   ├── forms/                # Form components (5 files)
 │   │   ├── AuthorFormSection.tsx
 │   │   ├── PostFormSection.tsx
 │   │   ├── PostModalActions.tsx
 │   │   ├── TagSelection.tsx
 │   │   └── ImageUploader.tsx
 │   ├── modals/              # Modal components (3 files)
-│   │   ├── PostModal.tsx    # Create/edit post modal
-│   │   ├── PostViewModal.tsx # Expanded post view
-│   │   └── DeleteModal.tsx  # Delete confirmation
+│   │   ├── PostModal.tsx           # Create/edit post modal
+│   │   ├── PostViewModal.tsx       # Expanded post view
+│   │   └── DeleteModal.tsx         # Delete confirmation
 │   └── ui/                  # UI components (6 files)
-│       ├── StatsHeader.tsx  # Statistics dashboard
-│       ├── PostCard.tsx     # Post display card
-│       ├── Pagination.tsx   # Pagination controls
-│       ├── LoadingSkeleton.tsx # Loading state
-│       ├── EmptyState.tsx   # Empty state display
-│       └── ToastProvider.tsx # Toast notifications
+│       ├── StatsHeader.tsx         # Statistics dashboard
+│       ├── PostCard.tsx            # Post display card
+│       ├── Pagination.tsx          # Pagination controls
+│       ├── LoadingSkeleton.tsx     # Loading state
+│       ├── EmptyState.tsx          # Empty state display
+│       └── ToastProvider.tsx       # Toast notifications
 ├── constants/               # App constants
-│   ├── categories.ts        # Post categories
-│   └── config.ts            # Configuration values
+│   ├── categories.ts               # Post categories
+│   └── config.ts                   # Configuration values
 ├── hooks/                   # Custom React hooks (5 files)
-│   ├── usePostManagement.ts # CRUD operations hook
-│   ├── useFilters.ts        # Filter state management
-│   ├── useModals.ts         # Modal state management
-│   ├── useBodyScrollLock.ts # Scroll locking for modals
-│   └── useEscapeKey.ts      # ESC key handler
+│   ├── usePostManagement.ts        # CRUD operations hook
+│   ├── useFilters.ts               # Filter state management
+│   ├── useModals.ts                # Modal state management
+│   ├── useBodyScrollLock.ts        # Scroll locking for modals
+│   └── useEscapeKey.ts             # ESC key handler
 ├── types/                   # TypeScript types
-│   ├── index.ts             # Main types
-│   ├── errors.ts            # Error handling types
-│   └── events.ts            # Event types
+│   ├── index.ts                    # Main types
+│   ├── errors.ts                   # Error handling types
+│   └── events.ts                   # Event types
 └── utils/                   # Utility functions
-    └── formatters.ts        # Date/number formatters
+    └── formatters.ts               # Date/number formatters
 ```
 
 ## Features in Detail
@@ -128,7 +128,7 @@ src/
 ### Filtering
 
 - Search by post text or author name (debounced, 500ms)
-- Filter by category (10 categories)
+- Filter by category (7 categories)
 - Date range filtering (dd/mm/yyyy format)
 - Sort by: date, likes, comments, shares, engagement rate
 - Sort order: ascending or descending
