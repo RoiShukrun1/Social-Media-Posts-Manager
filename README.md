@@ -426,6 +426,7 @@ Change in: `backend/src/db/database.ts`
 - [scripts/CSV_CLEANING_PROCESS.md](scripts/CSV_CLEANING_PROCESS.md) - Data cleaning process
 - [backend/README.md](backend/README.md) - Backend setup and API details
 - [frontend/README.md](frontend/README.md) - Frontend setup and components
+- [humaz assignment presentation.mp4](humaz%20assignment%20presentation.mp4) - Presentation video
 
 ## Author
 

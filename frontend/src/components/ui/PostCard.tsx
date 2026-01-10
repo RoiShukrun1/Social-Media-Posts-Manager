@@ -25,8 +25,14 @@ export default function PostCard({
   // Memoize expensive formatting operations
   const formattedDate = useMemo(() => formatDate(post.date), [post.date]);
   const formattedLikes = useMemo(() => formatNumber(post.likes), [post.likes]);
-  const formattedComments = useMemo(() => formatNumber(post.comments), [post.comments]);
-  const formattedShares = useMemo(() => formatNumber(post.shares), [post.shares]);
+  const formattedComments = useMemo(
+    () => formatNumber(post.comments),
+    [post.comments]
+  );
+  const formattedShares = useMemo(
+    () => formatNumber(post.shares),
+    [post.shares]
+  );
 
   return (
     <div
